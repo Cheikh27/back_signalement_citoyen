@@ -1,0 +1,35 @@
+# Flask: Framework web léger pour créer des applications web en Python.
+Flask==3.1.0
+
+# Flask-SQLAlchemy: Extension pour intégrer SQLAlchemy avec Flask, facilitant l'interaction avec les bases de données relationnelles.
+Flask-SQLAlchemy==3.1.1
+
+# Flask-Migrate: Extension pour gérer les migrations de la base de données avec Alembic.
+Flask-Migrate==4.1.0
+
+# Flask-Cors: Extension pour gérer les en-têtes CORS et autoriser les requêtes cross-origin.
+Flask-Cors==5.0.1
+
+# Flask-Caching: Extension pour mettre en cache les réponses des routes et améliorer les performances.
+Flask-Caching==2.3.1
+
+# Flask-Login: Extension pour gérer les sessions utilisateur et l'authentification.
+Flask-Login==0.6.3
+
+# Flask-Mail: Extension pour envoyer des emails via SMTP.
+Flask-Mail==0.10.0
+
+# python-dotenv: Bibliothèque pour charger les variables d'environnement à partir d'un fichier .env.
+python-dotenv==1.0.1
+
+# PyMySQL: Driver MySQL pour Python, utilisé par SQLAlchemy pour se connecter à une base de données MySQL.
+PyMySQL==1.1.1
+
+# pytest : Framework de tests pour Python, utilisé pour écrire et exécuter des tests unitaires.
+pytest==8.3.5
+
+#flask-jwt-extended est une extension Flask qui facilite l'intégration de la gestion des tokens JWT (JSON Web Tokens) pour l'authentification et l'autorisation sécurisée des utilisateurs dans les applications web.
+flask-jwt-extended==4.7.1
+
+# pour gérer la sérialisation des objets automatiquement
+marshmallow==3.26.1

@@ -1,0 +1,27 @@
+# Ignorer les fichiers et répertoires sensibles
+.env
+__pycache__/
+*.pyc
+*.pyo
+instance/
+.webassets-cache/
+.vscode/
+
+# Ignorer les fichiers de configuration spécifiques à l'environnement
+.flaskenv
+
+# Ignorer les fichiers de migration
+# migrations/versions/*.py
+migrations
+
+# Ignorer les fichiers de log
+*.log
+
+# Ignorer les fichiers de tests
+.coverage
+.tox/
+.nox/
+
+# Ignorer les fichiers de documentation générés
+docs/_build/
+venv
