@@ -1,11 +1,11 @@
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify
+import logging
+from app import cache
 from app.services.reaction.appreciation_service import (
     create_appreciation, get_appreciation_by_id, get_all_appreciations,
     get_appreciations_by_citoyen, get_appreciations_by_publication,
     delete_appreciation
 )
-import logging
-# from flask_caching import Cache # type: ignore
 
 # Configurer le logging
 logging.basicConfig(level=logging.INFO)
@@ -14,24 +14,72 @@ logger = logging.getLogger(__name__)
 # Créer un Blueprint pour les routes liées à 'appreciation'
 appreciation_bp = Blueprint('appreciation', __name__)
 
-# Initialiser le cache
-# cache = Cache(current_app)
-
 # Route pour créer un nouvel enregistrement
 @appreciation_bp.route('/add', methods=['POST'])
 def add_appreciation():
-    data = request.get_json()
-    nouvelle_appreciation = create_appreciation(
-        citoyen_id=data['citoyen_id'],
-        publication_id=data['publication_id']
-    )
-    logger.info(f"Nouvelle appréciation créée avec l'ID: {nouvelle_appreciation.IDappreciation}")
-    return jsonify({'id': nouvelle_appreciation.IDappreciation}), 201
+    """
+    Ajoute une nouvelle appréciation.
+    ---
+    consumes:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            citoyen_id:
+              type: integer
+              example: 1
+            publication_id:
+              type: integer
+              example: 1
+    responses:
+      201:
+        description: Appréciation créée avec succès
+      400:
+        description: Données incomplètes
+      500:
+        description: Erreur serveur
+    """
+    try:
+        data = request.get_json()
+        required_fields = ['citoyen_id', 'publication_id']
+        if not data or any(field not in data for field in required_fields):
+            logger.error("Données incomplètes reçues pour créer une appréciation")
+            return jsonify({'message': 'Bad Request'}), 400
+
+        nouvelle_appreciation = create_appreciation(
+            citoyen_id=data['citoyen_id'],
+            publication_id=data['publication_id']
+        )
+        logger.info(f"Nouvelle appréciation créée avec l'ID: {nouvelle_appreciation.IDappreciation}")
+        return jsonify({'id': nouvelle_appreciation.IDappreciation}), 201
+
+    except Exception as e:
+        logger.error(f"Erreur lors de la création d'une appréciation: {str(e)}")
+        return jsonify({'message': 'Internal Server Error'}), 500
 
 # Route pour obtenir un enregistrement par ID
 @appreciation_bp.route('/<int:appreciation_id>', methods=['GET'])
-# @cache.cached(timeout=60, key_prefix='get_appreciation')
+@cache.cached(timeout=60, key_prefix='get_appreciation')
 def get_appreciation(appreciation_id):
+    """
+    Récupère une appréciation spécifique via son ID.
+    ---
+    parameters:
+      - name: appreciation_id
+        in: path
+        required: true
+        type: integer
+        example: 1
+    responses:
+      200:
+        description: Détails de l'appréciation
+      404:
+        description: Appréciation non trouvée
+    """
     logger.info(f"Récupération de l'appréciation avec l'ID: {appreciation_id}")
     appreciation = get_appreciation_by_id(appreciation_id)
     if appreciation:
@@ -45,8 +93,15 @@ def get_appreciation(appreciation_id):
 
 # Route pour obtenir tous les enregistrements
 @appreciation_bp.route('/all', methods=['GET'])
-# @cache.cached(timeout=60, key_prefix='list_appreciations')
+@cache.cached(timeout=60, key_prefix='list_appreciations')
 def list_appreciations():
+    """
+    Récupère toutes les appréciations enregistrées.
+    ---
+    responses:
+      200:
+        description: Liste des appréciations
+    """
     logger.info("Récupération de toutes les appréciations")
     appreciations = get_all_appreciations()
     return jsonify([{
@@ -58,8 +113,21 @@ def list_appreciations():
 
 # Route pour obtenir les enregistrements par citoyen
 @appreciation_bp.route('/<int:citoyen_id>/citoyens', methods=['GET'])
-# @cache.cached(timeout=60, key_prefix='list_appreciations_by_citoyen')
+@cache.cached(timeout=60, key_prefix='list_appreciations_by_citoyen')
 def list_appreciations_by_citoyen(citoyen_id):
+    """
+    Récupère toutes les appréciations d'un citoyen spécifique.
+    ---
+    parameters:
+      - name: citoyen_id
+        in: path
+        required: true
+        type: integer
+        example: 1
+    responses:
+      200:
+        description: Liste des appréciations
+    """
     logger.info(f"Récupération des appréciations pour le citoyen avec l'ID: {citoyen_id}")
     appreciations = get_appreciations_by_citoyen(citoyen_id)
     return jsonify([{
@@ -70,8 +138,21 @@ def list_appreciations_by_citoyen(citoyen_id):
 
 # Route pour obtenir les enregistrements par publication
 @appreciation_bp.route('/<int:publication_id>/publications', methods=['GET'])
-# @cache.cached(timeout=60, key_prefix='list_appreciations_by_publication')
+@cache.cached(timeout=60, key_prefix='list_appreciations_by_publication')
 def list_appreciations_by_publication(publication_id):
+    """
+    Récupère toutes les appréciations liées à une publication spécifique.
+    ---
+    parameters:
+      - name: publication_id
+        in: path
+        required: true
+        type: integer
+        example: 1
+    responses:
+      200:
+        description: Liste des appréciations associées
+    """
     logger.info(f"Récupération des appréciations pour la publication avec l'ID: {publication_id}")
     appreciations = get_appreciations_by_publication(publication_id)
     return jsonify([{
@@ -83,8 +164,30 @@ def list_appreciations_by_publication(publication_id):
 # Route pour supprimer un enregistrement
 @appreciation_bp.route('/delete/<int:appreciation_id>', methods=['DELETE'])
 def remove_appreciation(appreciation_id):
-    success = delete_appreciation(appreciation_id)
-    if success:
-        logger.info(f"Appréciation avec l'ID {appreciation_id} supprimée")
-        return '', 204
-    return jsonify({'message': 'Not found'}), 404
+    """
+    Supprime une appréciation de la base de données.
+    ---
+    parameters:
+      - name: appreciation_id
+        in: path
+        required: true
+        type: integer
+        example: 1
+    responses:
+      204:
+        description: Suppression réussie
+      404:
+        description: Appréciation non trouvée
+      500:
+        description: Erreur serveur
+    """
+    try:
+        success = delete_appreciation(appreciation_id)
+        if success:
+            logger.info(f"Appréciation avec l'ID {appreciation_id} supprimée")
+            return '', 204
+        return jsonify({'message': 'Not found'}), 404
+
+    except Exception as e:
+        logger.error(f"Erreur lors de la suppression d'une appréciation: {str(e)}")
+        return jsonify({'message': 'Internal Server Error'}), 500

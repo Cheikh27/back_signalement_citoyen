@@ -6,6 +6,8 @@ from datetime import datetime
 
 class Groupe(db.Model):
     __tablename__ = 'groupes'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
+
 
     IDgroupe = db.Column(db.Integer, primary_key=True)
     nom = db.Column(db.String(50), nullable=False)  

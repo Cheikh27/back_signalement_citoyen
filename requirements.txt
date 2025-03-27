@@ -12,6 +12,7 @@ Flask-Cors==5.0.1
 
 # Flask-Caching: Extension pour mettre en cache les réponses des routes et améliorer les performances.
 Flask-Caching==2.3.1
+redis==5.2.1
 
 # Flask-Login: Extension pour gérer les sessions utilisateur et l'authentification.
 Flask-Login==0.6.3
@@ -28,8 +29,24 @@ PyMySQL==1.1.1
 # pytest : Framework de tests pour Python, utilisé pour écrire et exécuter des tests unitaires.
 pytest==8.3.5
 
-#flask-jwt-extended est une extension Flask qui facilite l'intégration de la gestion des tokens JWT (JSON Web Tokens) pour l'authentification et l'autorisation sécurisée des utilisateurs dans les applications web.
+#flask-jwt-extended est une extension Flask qui facilite l'intégration de la gestion des tokens JWT (JSON Web Tokens) 
+# pour l'authentification et l'autorisation sécurisée des utilisateurs dans les applications web.
 flask-jwt-extended==4.7.1
 
 # pour gérer la sérialisation des objets automatiquement
 marshmallow==3.26.1
+
+# pour le hashage de mot de passe et autres   | Flask-Bcrypt
+Bcrypt-Flask==1.0.2
+
+# prometheus-flask-exporter est conçu pour exposer des métriques sur l'état de votre application (nombre de requêtes, latence, erreurs HTTP, etc.).
+prometheus-flask-exporter==0.23.2
+
+# Les WebSockets permettent une communication bidirectionnelle en temps réel entre un client (navigateur, application) 
+# et un serveur, maintenant une connexion persistante pour des échanges de données continus.
+Flask-SocketIO==5.5.1
+
+# pour la documentation du backend
+flasgger==0.9.7.1
+
+#pour la compression et decrompression on utilise zlib qui est implementer par python

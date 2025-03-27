@@ -1,0 +1,4299 @@
+{
+  "definitions": {},
+  "info": {
+    "description": "powered by Flasgger",
+    "termsOfService": "/tos",
+    "title": "A swagger API",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/api/admin/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "example": "123 Rue Exemple",
+                  "type": "string"
+                },
+                "image": {
+                  "example": "url_to_image",
+                  "type": "string"
+                },
+                "nom": {
+                  "example": "Dupont",
+                  "type": "string"
+                },
+                "password": {
+                  "example": "password123",
+                  "type": "string"
+                },
+                "prenom": {
+                  "example": "Jean",
+                  "type": "string"
+                },
+                "role": {
+                  "example": "admin",
+                  "type": "string"
+                },
+                "telephone": {
+                  "example": "0123456789",
+                  "type": "string"
+                },
+                "username": {
+                  "example": "dupont",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Administrateur cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute un nouvel administrateur."
+      }
+    },
+    "/api/admin/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des administrateurs"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les administrateurs enregistr\u00e9s."
+      }
+    },
+    "/api/admin/delete/{admin_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "admin_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Administrateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime un administrateur de la base de donn\u00e9es."
+      }
+    },
+    "/api/admin/login": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "password": {
+                  "example": "password123",
+                  "type": "string"
+                },
+                "username": {
+                  "example": "dupont",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connexion r\u00e9ussie"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "401": {
+            "description": "Identifiants invalides"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Connecte un administrateur."
+      }
+    },
+    "/api/admin/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9connexion r\u00e9ussie"
+          }
+        },
+        "summary": "D\u00e9connecte un administrateur."
+      }
+    },
+    "/api/admin/protected": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de l'administrateur connect\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re les informations de l'administrateur connect\u00e9."
+      }
+    },
+    "/api/admin/register": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "example": "123 Rue Exemple",
+                  "type": "string"
+                },
+                "image": {
+                  "example": "url_to_image",
+                  "type": "string"
+                },
+                "nom": {
+                  "example": "Dupont",
+                  "type": "string"
+                },
+                "password": {
+                  "example": "password123",
+                  "type": "string"
+                },
+                "prenom": {
+                  "example": "Jean",
+                  "type": "string"
+                },
+                "role": {
+                  "example": "admin",
+                  "type": "string"
+                },
+                "telephone": {
+                  "example": "0123456789",
+                  "type": "string"
+                },
+                "username": {
+                  "example": "dupont",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Administrateur enregistr\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Inscrit un nouvel administrateur."
+      }
+    },
+    "/api/admin/update/{admin_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "example": "123 Rue Exemple",
+                  "type": "string"
+                },
+                "image": {
+                  "example": "url_to_new_image",
+                  "type": "string"
+                },
+                "nom": {
+                  "example": "Dupont",
+                  "type": "string"
+                },
+                "password": {
+                  "example": "newpassword123",
+                  "type": "string"
+                },
+                "prenom": {
+                  "example": "Jean",
+                  "type": "string"
+                },
+                "role": {
+                  "example": "admin",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Administrateur mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Administrateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour les informations d'un administrateur."
+      }
+    },
+    "/api/admin/{admin_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "admin_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de l'administrateur"
+          },
+          "404": {
+            "description": "Administrateur non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un administrateur sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/appartenir/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "groupe_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Enregistrement cr\u00e9\u00e9 avec succ\u00e8s",
+            "schema": {
+              "properties": {
+                "id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "summary": "Cr\u00e9e un nouvel enregistrement d'appartenance."
+      }
+    },
+    "/api/appartenir/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des enregistrements",
+            "schema": {
+              "items": {
+                "properties": {
+                  "citoyen_id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "dateCreated": {
+                    "example": "2023-10-01T00:00:00Z",
+                    "type": "string"
+                  },
+                  "groupe_id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "id": {
+                    "example": 1,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les enregistrements d'appartenance."
+      }
+    },
+    "/api/appartenir/delete/{appartenir_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "appartenir_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Enregistrement supprim\u00e9 avec succ\u00e8s"
+          },
+          "404": {
+            "description": "Enregistrement non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "summary": "Supprime un enregistrement d'appartenance."
+      }
+    },
+    "/api/appartenir/update/{appartenir_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "appartenir_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "groupe_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enregistrement mis \u00e0 jour avec succ\u00e8s",
+            "schema": {
+              "properties": {
+                "id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Enregistrement non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour un enregistrement d'appartenance."
+      }
+    },
+    "/api/appartenir/{appartenir_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "appartenir_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enregistrement trouv\u00e9",
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "dateCreated": {
+                  "example": "2023-10-01T00:00:00Z",
+                  "type": "string"
+                },
+                "groupe_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "404": {
+            "description": "Enregistrement non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un enregistrement d'appartenance par son ID."
+      }
+    },
+    "/api/appartenir/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des enregistrements",
+            "schema": {
+              "items": {
+                "properties": {
+                  "dateCreated": {
+                    "example": "2023-10-01T00:00:00Z",
+                    "type": "string"
+                  },
+                  "groupe_id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "id": {
+                    "example": 1,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re les enregistrements d'appartenance pour un citoyen donn\u00e9."
+      }
+    },
+    "/api/appartenir/{groupe_id}/groupes": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "groupe_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des enregistrements",
+            "schema": {
+              "items": {
+                "properties": {
+                  "citoyen_id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "dateCreated": {
+                    "example": "2023-10-01T00:00:00Z",
+                    "type": "string"
+                  },
+                  "id": {
+                    "example": 1,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re les enregistrements d'appartenance pour un groupe donn\u00e9."
+      }
+    },
+    "/api/appreciation/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "publication_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Appr\u00e9ciation cr\u00e9\u00e9e avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute une nouvelle appr\u00e9ciation."
+      }
+    },
+    "/api/appreciation/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des appr\u00e9ciations"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les appr\u00e9ciations enregistr\u00e9es."
+      }
+    },
+    "/api/appreciation/delete/{appreciation_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "appreciation_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Appr\u00e9ciation non trouv\u00e9e"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime une appr\u00e9ciation de la base de donn\u00e9es."
+      }
+    },
+    "/api/appreciation/{appreciation_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "appreciation_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de l'appr\u00e9ciation"
+          },
+          "404": {
+            "description": "Appr\u00e9ciation non trouv\u00e9e"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re une appr\u00e9ciation sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/appreciation/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des appr\u00e9ciations"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les appr\u00e9ciations d'un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/appreciation/{publication_id}/publications": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "publication_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des appr\u00e9ciations associ\u00e9es"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les appr\u00e9ciations li\u00e9es \u00e0 une publication sp\u00e9cifique."
+      }
+    },
+    "/api/autorite/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "example": "123 Rue Exemple",
+                  "type": "string"
+                },
+                "description": {
+                  "example": "Description de l'autorit\u00e9",
+                  "type": "string"
+                },
+                "image": {
+                  "example": "url_to_image",
+                  "type": "string"
+                },
+                "nom": {
+                  "example": "Dupont",
+                  "type": "string"
+                },
+                "password": {
+                  "example": "password123",
+                  "type": "string"
+                },
+                "role": {
+                  "example": "admin",
+                  "type": "string"
+                },
+                "telephone": {
+                  "example": "0123456789",
+                  "type": "string"
+                },
+                "typeAuthorite": {
+                  "example": "type1",
+                  "type": "string"
+                },
+                "username": {
+                  "example": "dupont",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Autorit\u00e9 cr\u00e9\u00e9e avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute une nouvelle autorit\u00e9."
+      }
+    },
+    "/api/autorite/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des autorit\u00e9s"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les autorit\u00e9s enregistr\u00e9es."
+      }
+    },
+    "/api/autorite/delete/{authorite_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "authorite_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Autorit\u00e9 non trouv\u00e9e"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime une autorit\u00e9 de la base de donn\u00e9es."
+      }
+    },
+    "/api/autorite/login": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "password": {
+                  "example": "password123",
+                  "type": "string"
+                },
+                "username": {
+                  "example": "dupont",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connexion r\u00e9ussie"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "401": {
+            "description": "Identifiants invalides"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Connecte une autorit\u00e9."
+      }
+    },
+    "/api/autorite/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9connexion r\u00e9ussie"
+          }
+        },
+        "summary": "D\u00e9connecte une autorit\u00e9."
+      }
+    },
+    "/api/autorite/protected": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de l'autorit\u00e9 connect\u00e9e"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re les informations de l'autorit\u00e9 connect\u00e9e."
+      }
+    },
+    "/api/autorite/register": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "example": "123 Rue Exemple",
+                  "type": "string"
+                },
+                "description": {
+                  "example": "Description de l'autorit\u00e9",
+                  "type": "string"
+                },
+                "image": {
+                  "example": "url_to_image",
+                  "type": "string"
+                },
+                "nom": {
+                  "example": "Dupont",
+                  "type": "string"
+                },
+                "password": {
+                  "example": "password123",
+                  "type": "string"
+                },
+                "role": {
+                  "example": "admin",
+                  "type": "string"
+                },
+                "telephone": {
+                  "example": "0123456789",
+                  "type": "string"
+                },
+                "typeAuthorite": {
+                  "example": "type1",
+                  "type": "string"
+                },
+                "username": {
+                  "example": "dupont",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Autorit\u00e9 enregistr\u00e9e avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes ou type d'utilisateur invalide"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Inscrit une nouvelle autorit\u00e9."
+      }
+    },
+    "/api/autorite/update/{authorite_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "example": "123 Rue Exemple",
+                  "type": "string"
+                },
+                "description": {
+                  "example": "Nouvelle description",
+                  "type": "string"
+                },
+                "image": {
+                  "example": "url_to_new_image",
+                  "type": "string"
+                },
+                "nom": {
+                  "example": "Dupont",
+                  "type": "string"
+                },
+                "password": {
+                  "example": "newpassword123",
+                  "type": "string"
+                },
+                "role": {
+                  "example": "admin",
+                  "type": "string"
+                },
+                "telephone": {
+                  "example": "0123456789",
+                  "type": "string"
+                },
+                "typeAuthorite": {
+                  "example": "type1",
+                  "type": "string"
+                },
+                "username": {
+                  "example": "dupont",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Autorit\u00e9 mise \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Autorit\u00e9 non trouv\u00e9e"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour les informations d'une autorit\u00e9."
+      }
+    },
+    "/api/autorite/{authorite_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "authorite_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de l'autorit\u00e9"
+          },
+          "404": {
+            "description": "Autorit\u00e9 non trouv\u00e9e"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re une autorit\u00e9 sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/citoyen/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "type": "string"
+                },
+                "nom": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "prenom": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "telephone": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Citoyen cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes pour la cr\u00e9ation de citoyen"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Ajoute un nouveau citoyen."
+      }
+    },
+    "/api/citoyen/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des citoyens"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les citoyens enregistr\u00e9s."
+      }
+    },
+    "/api/citoyen/delete/{citoyen_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Citoyen non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Supprime un citoyen de la base de donn\u00e9es."
+      }
+    },
+    "/api/citoyen/login": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "password": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connexion r\u00e9ussie"
+          },
+          "400": {
+            "description": "Identifiants manquants"
+          },
+          "401": {
+            "description": "Identifiants invalides"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Connecte un citoyen."
+      }
+    },
+    "/api/citoyen/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9connexion r\u00e9ussie"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "D\u00e9connecte un citoyen."
+      }
+    },
+    "/api/citoyen/protected": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du citoyen connect\u00e9"
+          },
+          "404": {
+            "description": "Citoyen non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re les informations du citoyen connect\u00e9."
+      }
+    },
+    "/api/citoyen/register": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "type": "string"
+                },
+                "nom": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "prenom": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "telephone": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Enregistrement r\u00e9ussi"
+          },
+          "400": {
+            "description": "Champs obligatoires manquants ou type utilisateur invalide"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Inscrit un nouveau citoyen."
+      }
+    },
+    "/api/citoyen/update/{citoyen_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "type": "string"
+                },
+                "nom": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "prenom": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "telephone": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Citoyen mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es manquantes"
+          },
+          "404": {
+            "description": "Citoyen non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Met \u00e0 jour les informations d'un citoyen."
+      }
+    },
+    "/api/citoyen/{citoyen_id}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du citoyen"
+          },
+          "404": {
+            "description": "Citoyen non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un citoyen sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/commentaire_petition/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "description": {
+                  "example": "Ceci est un commentaire.",
+                  "type": "string"
+                },
+                "petition_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Commentaire cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute un nouveau commentaire \u00e0 une p\u00e9tition."
+      }
+    },
+    "/api/commentaire_petition/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des commentaires"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les commentaires enregistr\u00e9s."
+      }
+    },
+    "/api/commentaire_petition/delete/{commentaire_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "commentaire_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Commentaire non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime un commentaire de la base de donn\u00e9es."
+      }
+    },
+    "/api/commentaire_petition/update/{commentaire_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "commentaire_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "description": {
+                  "example": "Nouveau contenu du commentaire.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Commentaire mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Commentaire non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour un commentaire existant."
+      }
+    },
+    "/api/commentaire_petition/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des commentaires"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les commentaires d'un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/commentaire_petition/{commentaire_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "commentaire_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du commentaire"
+          },
+          "404": {
+            "description": "Commentaire non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un commentaire sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/commentaire_petition/{petition_id}/petitions": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "petition_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des commentaires associ\u00e9s"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les commentaires li\u00e9s \u00e0 une p\u00e9tition sp\u00e9cifique."
+      }
+    },
+    "/api/commentaire_publication/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "description": {
+                  "example": "Ceci est un commentaire.",
+                  "type": "string"
+                },
+                "publication_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Commentaire de publication cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute un nouveau commentaire \u00e0 une publication."
+      }
+    },
+    "/api/commentaire_publication/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des commentaires de publication"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les commentaires de publication enregistr\u00e9s."
+      }
+    },
+    "/api/commentaire_publication/delete/{commentaire_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "commentaire_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Commentaire de publication non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime un commentaire de publication de la base de donn\u00e9es."
+      }
+    },
+    "/api/commentaire_publication/update/{commentaire_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "commentaire_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "description": {
+                  "example": "Nouveau contenu du commentaire.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Commentaire de publication mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Commentaire de publication non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour un commentaire de publication existant."
+      }
+    },
+    "/api/commentaire_publication/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des commentaires de publication"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les commentaires de publication d'un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/commentaire_publication/{commentaire_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "commentaire_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du commentaire de publication"
+          },
+          "404": {
+            "description": "Commentaire de publication non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un commentaire de publication sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/commentaire_publication/{publication_id}/publications": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "publication_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des commentaires de publication associ\u00e9s"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les commentaires de publication li\u00e9s \u00e0 une publication sp\u00e9cifique."
+      }
+    },
+    "/api/commentaire_signalement/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "description": {
+                  "example": "Ceci est un commentaire.",
+                  "type": "string"
+                },
+                "signalement_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Commentaire de signalement cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute un nouveau commentaire \u00e0 un signalement."
+      }
+    },
+    "/api/commentaire_signalement/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des commentaires de signalement"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les commentaires de signalement enregistr\u00e9s."
+      }
+    },
+    "/api/commentaire_signalement/delete/{commentaire_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "commentaire_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Commentaire de signalement non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime un commentaire de signalement de la base de donn\u00e9es."
+      }
+    },
+    "/api/commentaire_signalement/update/{commentaire_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "commentaire_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "description": {
+                  "example": "Nouveau contenu du commentaire.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Commentaire de signalement mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Commentaire de signalement non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour un commentaire de signalement existant."
+      }
+    },
+    "/api/commentaire_signalement/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des commentaires de signalement"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les commentaires de signalement d'un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/commentaire_signalement/{commentaire_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "commentaire_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du commentaire de signalement"
+          },
+          "404": {
+            "description": "Commentaire de signalement non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un commentaire de signalement sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/commentaire_signalement/{signalement_id}/signalements": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signalement_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des commentaires de signalement associ\u00e9s"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les commentaires de signalement li\u00e9s \u00e0 un signalement sp\u00e9cifique."
+      }
+    },
+    "/api/groupe/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "admin": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "description": {
+                  "example": "Description du groupe",
+                  "type": "string"
+                },
+                "image": {
+                  "example": "http://example.com/image.png",
+                  "type": "string"
+                },
+                "nom": {
+                  "example": "Nouveau Groupe",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Groupe cr\u00e9\u00e9 avec succ\u00e8s",
+            "schema": {
+              "properties": {
+                "id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "summary": "Cr\u00e9e un nouveau groupe."
+      }
+    },
+    "/api/groupe/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des groupes",
+            "schema": {
+              "items": {
+                "properties": {
+                  "admin": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "dateCreated": {
+                    "example": "2023-10-01T00:00:00Z",
+                    "type": "string"
+                  },
+                  "description": {
+                    "example": "Description du groupe",
+                    "type": "string"
+                  },
+                  "id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "image": {
+                    "example": "http://example.com/image.png",
+                    "type": "string"
+                  },
+                  "nom": {
+                    "example": "Nouveau Groupe",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les groupes."
+      }
+    },
+    "/api/groupe/delete/{groupe_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "groupe_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Groupe supprim\u00e9 avec succ\u00e8s"
+          },
+          "404": {
+            "description": "Groupe non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "summary": "Supprime un groupe."
+      }
+    },
+    "/api/groupe/update/{groupe_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "groupe_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "admin": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "description": {
+                  "example": "Description du groupe",
+                  "type": "string"
+                },
+                "image": {
+                  "example": "http://example.com/image.png",
+                  "type": "string"
+                },
+                "nom": {
+                  "example": "Nouveau Groupe",
+                  "type": "string"
+                },
+                "statut": {
+                  "example": "actif",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Groupe mis \u00e0 jour avec succ\u00e8s",
+            "schema": {
+              "properties": {
+                "id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Groupe non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour un groupe."
+      }
+    },
+    "/api/groupe/{groupe_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "groupe_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Groupe trouv\u00e9",
+            "schema": {
+              "properties": {
+                "admin": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "dateCreated": {
+                  "example": "2023-10-01T00:00:00Z",
+                  "type": "string"
+                },
+                "description": {
+                  "example": "Description du groupe",
+                  "type": "string"
+                },
+                "id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "image": {
+                  "example": "http://example.com/image.png",
+                  "type": "string"
+                },
+                "nom": {
+                  "example": "Nouveau Groupe",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "404": {
+            "description": "Groupe non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un groupe par son ID."
+      }
+    },
+    "/api/moderateur/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": "string"
+                },
+                "nom": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "prenom": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "telephone": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Mod\u00e9rateur cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes pour cr\u00e9er un mod\u00e9rateur"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Ajoute un nouveau mod\u00e9rateur."
+      }
+    },
+    "/api/moderateur/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des mod\u00e9rateurs"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les mod\u00e9rateurs enregistr\u00e9s."
+      }
+    },
+    "/api/moderateur/delete/{moderateur_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "moderateur_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Mod\u00e9rateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Supprime un mod\u00e9rateur de la base de donn\u00e9es."
+      }
+    },
+    "/api/moderateur/login": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "password": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connexion r\u00e9ussie"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "401": {
+            "description": "Identifiants invalides"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Connecte un mod\u00e9rateur."
+      }
+    },
+    "/api/moderateur/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9connexion r\u00e9ussie"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "D\u00e9connecte un mod\u00e9rateur."
+      }
+    },
+    "/api/moderateur/protected": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du mod\u00e9rateur connect\u00e9"
+          },
+          "404": {
+            "description": "Mod\u00e9rateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re les informations du mod\u00e9rateur connect\u00e9."
+      }
+    },
+    "/api/moderateur/register": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": "string"
+                },
+                "nom": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "prenom": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "telephone": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Mod\u00e9rateur enregistr\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes ou type d'utilisateur invalide"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Inscrit un nouveau mod\u00e9rateur."
+      }
+    },
+    "/api/moderateur/update/{moderateur_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": "string"
+                },
+                "nom": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "prenom": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "telephone": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mod\u00e9rateur mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es manquantes"
+          },
+          "404": {
+            "description": "Mod\u00e9rateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Met \u00e0 jour les informations d'un mod\u00e9rateur."
+      }
+    },
+    "/api/moderateur/{moderateur_id}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "moderateur_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du mod\u00e9rateur"
+          },
+          "404": {
+            "description": "Mod\u00e9rateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un mod\u00e9rateur sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/partager_petition/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "nb_partage": {
+                  "example": 0,
+                  "type": "integer"
+                },
+                "petition_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Partage de p\u00e9tition cr\u00e9\u00e9 avec succ\u00e8s",
+            "schema": {
+              "properties": {
+                "id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "summary": "Cr\u00e9e un nouveau partage de p\u00e9tition."
+      }
+    },
+    "/api/partager_petition/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des partages de p\u00e9tition",
+            "schema": {
+              "items": {
+                "properties": {
+                  "citoyen_id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "dateCreated": {
+                    "example": "2023-10-01T00:00:00Z",
+                    "type": "string"
+                  },
+                  "id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "nbPartage": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "petition_id": {
+                    "example": 1,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les partages de p\u00e9tition."
+      }
+    },
+    "/api/partager_petition/delete/{partager_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "partager_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Partage de p\u00e9tition supprim\u00e9 avec succ\u00e8s"
+          },
+          "404": {
+            "description": "Partage de p\u00e9tition non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "summary": "Supprime un partage de p\u00e9tition."
+      }
+    },
+    "/api/partager_petition/update/{partager_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "partager_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "nb_partage": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Partage de p\u00e9tition mis \u00e0 jour avec succ\u00e8s",
+            "schema": {
+              "properties": {
+                "id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Partage de p\u00e9tition non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour un partage de p\u00e9tition."
+      }
+    },
+    "/api/partager_petition/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des partages de p\u00e9tition",
+            "schema": {
+              "items": {
+                "properties": {
+                  "dateCreated": {
+                    "example": "2023-10-01T00:00:00Z",
+                    "type": "string"
+                  },
+                  "id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "nbPartage": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "petition_id": {
+                    "example": 1,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re les partages de p\u00e9tition pour un citoyen donn\u00e9."
+      }
+    },
+    "/api/partager_petition/{partager_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "partager_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Partage de p\u00e9tition trouv\u00e9",
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "dateCreated": {
+                  "example": "2023-10-01T00:00:00Z",
+                  "type": "string"
+                },
+                "id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "nbPartage": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "petition_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "404": {
+            "description": "Partage de p\u00e9tition non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un partage de p\u00e9tition par son ID."
+      }
+    },
+    "/api/partager_petition/{petition_id}/petitions": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "petition_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des partages de p\u00e9tition",
+            "schema": {
+              "items": {
+                "properties": {
+                  "citoyen_id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "dateCreated": {
+                    "example": "2023-10-01T00:00:00Z",
+                    "type": "string"
+                  },
+                  "id": {
+                    "example": 1,
+                    "type": "integer"
+                  },
+                  "nbPartage": {
+                    "example": 1,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re les partages de p\u00e9tition pour une p\u00e9tition donn\u00e9e."
+      }
+    },
+    "/api/partager_publication/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "nb_partage": {
+                  "example": 0,
+                  "type": "integer"
+                },
+                "publication_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Partage de publication cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute un nouveau partage de publication."
+      }
+    },
+    "/api/partager_publication/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des partages de publication"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les partages de publication enregistr\u00e9s."
+      }
+    },
+    "/api/partager_publication/delete/{partager_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "partager_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Partage de publication non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime un partage de publication de la base de donn\u00e9es."
+      }
+    },
+    "/api/partager_publication/update/{partager_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "partager_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "nb_partage": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Partage de publication mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Partage de publication non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour un partage de publication existant."
+      }
+    },
+    "/api/partager_publication/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des partages de publication"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les partages de publication d'un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/partager_publication/{partager_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "partager_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du partage de publication"
+          },
+          "404": {
+            "description": "Partage de publication non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un partage de publication sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/partager_publication/{publication_id}/publications": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "publication_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des partages de publication associ\u00e9s"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les partages de publication li\u00e9s \u00e0 une publication sp\u00e9cifique."
+      }
+    },
+    "/api/partager_signalement/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "nb_partage": {
+                  "example": 0,
+                  "type": "integer"
+                },
+                "signalement_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Partage de signalement cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute un nouveau partage de signalement."
+      }
+    },
+    "/api/partager_signalement/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des partages de signalement"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les partages de signalement enregistr\u00e9s."
+      }
+    },
+    "/api/partager_signalement/delete/{partager_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "partager_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Partage de signalement non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime un partage de signalement de la base de donn\u00e9es."
+      }
+    },
+    "/api/partager_signalement/update/{partager_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "partager_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "nb_partage": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Partage de signalement mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Partage de signalement non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour un partage de signalement existant."
+      }
+    },
+    "/api/partager_signalement/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des partages de signalement"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les partages de signalement d'un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/partager_signalement/{partager_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "partager_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du partage de signalement"
+          },
+          "404": {
+            "description": "Partage de signalement non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un partage de signalement sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/partager_signalement/{signalement_id}/signalements": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signalement_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des partages de signalement associ\u00e9s"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les partages de signalement li\u00e9s \u00e0 un signalement sp\u00e9cifique."
+      }
+    },
+    "/api/petition/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "cible": {
+                  "example": "Gouvernement",
+                  "type": "string"
+                },
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "description": {
+                  "example": "P\u00e9tition pour am\u00e9liorer les infrastructures",
+                  "type": "string"
+                },
+                "titre": {
+                  "example": "Am\u00e9lioration des routes",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "P\u00e9tition cr\u00e9\u00e9e avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute une nouvelle p\u00e9tition."
+      }
+    },
+    "/api/petition/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des p\u00e9titions"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les p\u00e9titions enregistr\u00e9es."
+      }
+    },
+    "/api/petition/delete/{petition_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "petition_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "P\u00e9tition non trouv\u00e9e"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime une p\u00e9tition de la base de donn\u00e9es."
+      }
+    },
+    "/api/petition/update/{petition_id}": {
+      "put": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "petition_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "description": {
+                  "example": "Nouvelle description de la p\u00e9tition",
+                  "type": "string"
+                },
+                "nb_signature": {
+                  "example": 100,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "P\u00e9tition mise \u00e0 jour avec succ\u00e8s"
+          },
+          "404": {
+            "description": "P\u00e9tition non trouv\u00e9e"
+          }
+        },
+        "summary": "Met \u00e0 jour les informations d'une p\u00e9tition existante."
+      }
+    },
+    "/api/petition/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des p\u00e9titions"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les p\u00e9titions d'un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/petition/{petition_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "petition_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de la p\u00e9tition"
+          },
+          "404": {
+            "description": "P\u00e9tition non trouv\u00e9e"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re une p\u00e9tition sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/publication/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "description": {
+                  "example": "Description d\u00e9taill\u00e9e",
+                  "type": "string"
+                },
+                "element": {
+                  "example": "\u00c9l\u00e9ment associ\u00e9",
+                  "type": "string"
+                },
+                "moderateur_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "nb_aime_negatif": {
+                  "example": 0,
+                  "type": "integer"
+                },
+                "nb_aime_positif": {
+                  "example": 0,
+                  "type": "integer"
+                },
+                "titre": {
+                  "example": "Titre de la publication",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "titre",
+                "description",
+                "element",
+                "autorite_id",
+                "signalement_id"
+              ],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Publication cr\u00e9\u00e9e avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur interne"
+          }
+        },
+        "summary": "Cr\u00e9e une nouvelle publication."
+      }
+    },
+    "/api/publication/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste de toutes les publications"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les publications enregistr\u00e9es."
+      }
+    },
+    "/api/publication/delete/{publication_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "publication_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Publication supprim\u00e9e avec succ\u00e8s"
+          },
+          "404": {
+            "description": "Publication non trouv\u00e9e"
+          },
+          "500": {
+            "description": "Erreur serveur interne"
+          }
+        },
+        "summary": "Supprime une publication de la base de donn\u00e9es."
+      }
+    },
+    "/api/publication/update/{publication_id}": {
+      "put": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "publication_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "description": {
+                  "example": "Nouvelle description",
+                  "type": "string"
+                },
+                "element": {
+                  "example": "Nouvel \u00e9l\u00e9ment",
+                  "type": "string"
+                },
+                "nb_aime_negatif": {
+                  "example": 2,
+                  "type": "integer"
+                },
+                "nb_aime_positif": {
+                  "example": 5,
+                  "type": "integer"
+                },
+                "titre": {
+                  "example": "Nouveau titre",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Publication mise \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Publication non trouv\u00e9e"
+          },
+          "500": {
+            "description": "Erreur serveur interne"
+          }
+        },
+        "summary": "Met \u00e0 jour une publication existante."
+      }
+    },
+    "/api/publication/{autorite_id}/autorites": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "autorite_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des publications de l'autorit\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les publications associ\u00e9es \u00e0 une autorit\u00e9 sp\u00e9cifique."
+      }
+    },
+    "/api/publication/{publication_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "publication_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de la publication"
+          },
+          "404": {
+            "description": "Publication non trouv\u00e9e"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re une publication sp\u00e9cifique par son identifiant."
+      }
+    },
+    "/api/publication/{signalement_id}/signalements": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signalement_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des publications du signalement"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les publications associ\u00e9es \u00e0 un signalement sp\u00e9cifique."
+      }
+    },
+    "/api/signalement/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "cible": {
+                  "example": "Autorit\u00e9 ou entit\u00e9 cibl\u00e9e",
+                  "type": "string"
+                },
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "description": {
+                  "example": "Description d\u00e9taill\u00e9e du signalement",
+                  "type": "string"
+                },
+                "elements": {
+                  "example": "\u00c9l\u00e9ments de preuve ou contexte",
+                  "type": "string"
+                },
+                "id_moderateur": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "nb_vote_negatif": {
+                  "example": 0,
+                  "type": "integer"
+                },
+                "nb_vote_positif": {
+                  "example": 0,
+                  "type": "integer"
+                },
+                "statut": {
+                  "default": "en_cours",
+                  "example": "en_cours",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "description",
+                "elements",
+                "cible",
+                "citoyen_id"
+              ],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Signalement cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur interne"
+          }
+        },
+        "summary": "Cr\u00e9e un nouveau signalement."
+      }
+    },
+    "/api/signalement/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste de tous les signalements"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les signalements enregistr\u00e9s."
+      }
+    },
+    "/api/signalement/delete/{signalement_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signalement_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Signalement supprim\u00e9 avec succ\u00e8s"
+          },
+          "404": {
+            "description": "Signalement non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur interne"
+          }
+        },
+        "summary": "Supprime un signalement de la base de donn\u00e9es."
+      }
+    },
+    "/api/signalement/update/{signalement_id}": {
+      "put": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signalement_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "cible": {
+                  "example": "Nouvelle cible",
+                  "type": "string"
+                },
+                "description": {
+                  "example": "Description mise \u00e0 jour",
+                  "type": "string"
+                },
+                "elements": {
+                  "example": "Nouveaux \u00e9l\u00e9ments",
+                  "type": "string"
+                },
+                "id_moderateur": {
+                  "example": 2,
+                  "type": "integer"
+                },
+                "nb_vote_negatif": {
+                  "example": 2,
+                  "type": "integer"
+                },
+                "nb_vote_positif": {
+                  "example": 5,
+                  "type": "integer"
+                },
+                "statut": {
+                  "example": "resolu",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Signalement mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Signalement non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur interne"
+          }
+        },
+        "summary": "Met \u00e0 jour un signalement existant."
+      }
+    },
+    "/api/signalement/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des signalements du citoyen"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les signalements associ\u00e9s \u00e0 un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/signalement/{signalement_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signalement_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du signalement"
+          },
+          "404": {
+            "description": "Signalement non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un signalement sp\u00e9cifique par son identifiant."
+      }
+    },
+    "/api/signature/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "nb_signature": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "petition_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Signature cr\u00e9\u00e9e avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute une nouvelle signature."
+      }
+    },
+    "/api/signature/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des signatures"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les signatures enregistr\u00e9es."
+      }
+    },
+    "/api/signature/delete/{signature_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signature_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Signature non trouv\u00e9e"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime une signature de la base de donn\u00e9es."
+      }
+    },
+    "/api/signature/update/{signature_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signature_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "nb_signature": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Signature mise \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "404": {
+            "description": "Signature non trouv\u00e9e"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Met \u00e0 jour une signature existante."
+      }
+    },
+    "/api/signature/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des signatures"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les signatures d'un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/signature/{petition_id}/petitions": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "petition_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des signatures associ\u00e9es"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re toutes les signatures li\u00e9es \u00e0 une p\u00e9tition sp\u00e9cifique."
+      }
+    },
+    "/api/signature/{signature_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signature_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de la signature"
+          },
+          "404": {
+            "description": "Signature non trouv\u00e9e"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re une signature sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/user/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "type": "string"
+                },
+                "nom": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "telephone": {
+                  "type": "string"
+                },
+                "user_type": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Utilisateur cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes pour cr\u00e9er un utilisateur"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Ajoute un nouvel utilisateur."
+      }
+    },
+    "/api/user/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des utilisateurs"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les utilisateurs enregistr\u00e9s."
+      }
+    },
+    "/api/user/delete/{user_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Utilisateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Supprime un utilisateur de la base de donn\u00e9es."
+      }
+    },
+    "/api/user/login": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "password": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connexion r\u00e9ussie"
+          },
+          "400": {
+            "description": "Identifiants requis"
+          },
+          "401": {
+            "description": "Authentification \u00e9chou\u00e9e"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Connecte un utilisateur."
+      }
+    },
+    "/api/user/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9connexion r\u00e9ussie"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "D\u00e9connecte un utilisateur."
+      }
+    },
+    "/api/user/protected": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de l'utilisateur connect\u00e9"
+          },
+          "404": {
+            "description": "Utilisateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re les informations de l'utilisateur connect\u00e9."
+      }
+    },
+    "/api/user/register": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "type": "string"
+                },
+                "nom": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "telephone": {
+                  "type": "string"
+                },
+                "user_type": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Enregistrement r\u00e9ussi"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes ou type d'utilisateur invalide"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Inscrit un nouvel utilisateur."
+      }
+    },
+    "/api/user/update/{user_id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "adresse": {
+                  "type": "string"
+                },
+                "nom": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "telephone": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilisateur mis \u00e0 jour avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es manquantes"
+          },
+          "404": {
+            "description": "Utilisateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "Met \u00e0 jour les informations d'un utilisateur."
+      }
+    },
+    "/api/user/{user_id}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails de l'utilisateur"
+          },
+          "404": {
+            "description": "Utilisateur non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur interne"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un utilisateur sp\u00e9cifique via son ID."
+      }
+    },
+    "/api/vote/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "citoyen_id": {
+                  "example": 1,
+                  "type": "integer"
+                },
+                "signalement_id": {
+                  "example": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Vote cr\u00e9\u00e9 avec succ\u00e8s"
+          },
+          "400": {
+            "description": "Donn\u00e9es incompl\u00e8tes"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Ajoute un nouveau vote."
+      }
+    },
+    "/api/vote/all": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Liste des votes"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les votes enregistr\u00e9s."
+      }
+    },
+    "/api/vote/delete/{vote_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "vote_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Suppression r\u00e9ussie"
+          },
+          "404": {
+            "description": "Vote non trouv\u00e9"
+          },
+          "500": {
+            "description": "Erreur serveur"
+          }
+        },
+        "summary": "Supprime un vote de la base de donn\u00e9es."
+      }
+    },
+    "/api/vote/{citoyen_id}/citoyens": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "citoyen_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des votes"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les votes d'un citoyen sp\u00e9cifique."
+      }
+    },
+    "/api/vote/{signalement_id}/signalements": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "signalement_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des votes associ\u00e9s"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re tous les votes li\u00e9s \u00e0 un signalement sp\u00e9cifique."
+      }
+    },
+    "/api/vote/{vote_id}": {
+      "get": {
+        "parameters": [
+          {
+            "example": 1,
+            "in": "path",
+            "name": "vote_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "D\u00e9tails du vote"
+          },
+          "404": {
+            "description": "Vote non trouv\u00e9"
+          }
+        },
+        "summary": "R\u00e9cup\u00e8re un vote sp\u00e9cifique via son ID."
+      }
+    }
+  },
+  "swagger": "2.0"
+}

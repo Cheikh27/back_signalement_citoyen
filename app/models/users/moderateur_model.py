@@ -3,6 +3,7 @@ from app.models import db
 
 class Moderateur(User):
     __tablename__ = 'moderateurs'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
 
     IDmoderateur = db.Column(db.Integer, db.ForeignKey('users.IDuser'), primary_key=True)
     prenom = db.Column(db.String(50), nullable=False)  

@@ -15,7 +15,7 @@ def client():
 def test_add_appartenir(mock_create, client):
     mock_create.return_value = Appartenir(IDappartenir=1, citoyenID=10, groupeID=20)
     
-    response = client.post('/appartenirs/add', json={'citoyen_id': 10, 'groupe_id': 20})
+    response = client.post('/api/appartenirs/add', json={'citoyen_id': 10, 'groupe_id': 20})
     assert response.status_code == 201
     assert response.json == {'id': 1}
 
@@ -23,7 +23,7 @@ def test_add_appartenir(mock_create, client):
 def test_get_appartenir(mock_get, client):
     mock_get.return_value = Appartenir(IDappartenir=1, citoyenID=10, groupeID=20, dateCreated="2024-01-01")
     
-    response = client.get('/appartenirs/1')
+    response = client.get('/api/appartenirs/1')
     assert response.status_code == 200
     assert response.json == {
         'id': 1, 'dateCreated': "2024-01-01", 'citoyen_id': 10, 'groupe_id': 20
@@ -33,7 +33,7 @@ def test_get_appartenir(mock_get, client):
 def test_list_appartenirs(mock_get_all, client):
     mock_get_all.return_value = [Appartenir(IDappartenir=1, citoyenID=10, groupeID=20, dateCreated="2024-01-01")]
     
-    response = client.get('/appartenirs/all')
+    response = client.get('/api/appartenirs/all')
     assert response.status_code == 200
     assert len(response.json) == 1
     assert response.json[0]['id'] == 1
@@ -42,7 +42,7 @@ def test_list_appartenirs(mock_get_all, client):
 def test_modify_appartenir(mock_update, client):
     mock_update.return_value = Appartenir(IDappartenir=1, citoyenID=15, groupeID=25)
     
-    response = client.put('/appartenirs/update/1', json={'citoyen_id': 15, 'groupe_id': 25})
+    response = client.put('/api/appartenirs/update/1', json={'citoyen_id': 15, 'groupe_id': 25})
     assert response.status_code == 200
     assert response.json == {'id': 1}
 
@@ -50,5 +50,5 @@ def test_modify_appartenir(mock_update, client):
 def test_remove_appartenir(mock_delete, client):
     mock_delete.return_value = True
     
-    response = client.delete('/appartenirs/delete/1')
+    response = client.delete('/api/appartenirs/delete/1')
     assert response.status_code == 204

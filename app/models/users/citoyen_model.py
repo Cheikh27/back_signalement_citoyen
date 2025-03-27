@@ -3,6 +3,7 @@ from app.models import db
 
 class Citoyen(User):
     __tablename__ = 'citoyens'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
 
     IDcitoyen = db.Column(db.Integer, db.ForeignKey('users.IDuser'), primary_key=True)
     prenom = db.Column(db.String(50), nullable=False)  # Augmenté à 50 pour plus de flexibilité

@@ -5,6 +5,7 @@ from app import db
 
 class PartagerPetition(db.Model):
     __tablename__ = 'partagerPetitions'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
     IDpartager = db.Column(db.Integer, primary_key=True)
     dateCreated = db.Column(db.DateTime, default=datetime.utcnow)  # Date de création
     nbPartage = db.Column(db.Integer , nullable=True)

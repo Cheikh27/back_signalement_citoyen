@@ -5,6 +5,7 @@ from app import db
 
 class Signature(db.Model):
     __tablename__ = 'signatures'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
     IDsignature = db.Column(db.Integer, primary_key=True)
     dateCreated = db.Column(db.DateTime, default=datetime.utcnow)  # Date de création
     nbSignature = db.Column(db.Integer, nullable=True)  # Date de création

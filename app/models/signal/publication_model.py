@@ -1,13 +1,15 @@
 from app.models import db
 from datetime import datetime
+import zlib
 
 class Publication(db.Model):
     __tablename__ = 'publications'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
 
     IDpublication = db.Column(db.Integer, primary_key=True)
     titre = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(255), nullable=False)
-    element = db.Column(db.String(255), nullable=False)
+    _element = db.Column('element', db.LargeBinary, nullable=False)  # Utiliser LargeBinary pour stocker les données compressées
     nbAimePositif = db.Column(db.Integer, nullable=True)
     nbAimeNegatif = db.Column(db.Integer, nullable=True)
 
@@ -24,6 +26,14 @@ class Publication(db.Model):
     Appreciation = db.relationship('Appreciation', backref='publications', lazy=True)
     PartagerPublication = db.relationship('PartagerPublication', backref='publications', lazy=True)
     CommentairePublication = db.relationship('CommentairePublication', backref='publications', lazy=True)
+
+    @property
+    def element(self):
+        return zlib.decompress(self._element).decode('utf-8')
+
+    @element.setter
+    def element(self, value):
+        self._element = zlib.compress(value.encode('utf-8'))
 
     def __repr__(self):
         return (f"<Publication ID: {self.IDpublication}, description: {self.description}, "

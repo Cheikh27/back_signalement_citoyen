@@ -4,6 +4,7 @@ from app import db
 
 class CommentairePublication(db.Model):
     __tablename__ = 'commentairePublications'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
     IDcommentaire = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text, nullable=False)
 

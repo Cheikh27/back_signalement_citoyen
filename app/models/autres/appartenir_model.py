@@ -5,6 +5,8 @@ from app import db
 
 class Appartenir(db.Model):
     __tablename__ = 'appartenirs'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
+
     IDappartenir = db.Column(db.Integer, primary_key=True)
     dateCreated = db.Column(db.DateTime, default=datetime.utcnow)  # Date de création
 

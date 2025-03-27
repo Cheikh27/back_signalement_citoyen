@@ -9,6 +9,7 @@ class TypeAuthorite(Enum):
 
 class Authorite(User):
     __tablename__ = 'authorites'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
 
     IDauthorite = db.Column(db.Integer, db.ForeignKey('users.IDuser'), primary_key=True)
     typeAuthorite = db.Column(db.Enum(TypeAuthorite), nullable=False)

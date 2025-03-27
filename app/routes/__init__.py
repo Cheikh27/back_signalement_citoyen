@@ -22,3 +22,4 @@ from .users.admin_route import admin_bp
 from .users.autorite_route import autorite_bp
 from .users.citoyen_route import citoyen_bp
 from .users.moderateur_route import moderateur_bp
+from .users.user_route import user_bp

@@ -11,6 +11,7 @@ class CibleEnum(enum.Enum):
 
 class Petition(db.Model):
     __tablename__ = 'petitions'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
     IDpetition = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(255), nullable=False)
     nbSignature = db.Column(db.Integer, nullable=True)

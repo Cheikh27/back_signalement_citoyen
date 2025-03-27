@@ -1,18 +1,15 @@
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
-# db = SQLAlchemy()
-# migrate = Migrate()
 from app import db
-
-
 from app.models import Moderateur
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import create_access_token
+
+# Initialiser Bcrypt
+bcrypt = Bcrypt()
 
 # Service de Création
 def create_moderateur(nom, adresse, password, role, username, image, telephone, prenom):
-    hashed_password = generate_password_hash(password)
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_moderateur = Moderateur(
         nom=nom, adresse=adresse, password=hashed_password, role=role,
         username=username, image=image, telephone=telephone,
@@ -21,30 +18,18 @@ def create_moderateur(nom, adresse, password, role, username, image, telephone, 
     )
     db.session.add(new_moderateur)
     db.session.commit()
-    # Ajouter des claims personnalisés au token JWT
-    # additional_claims = {
-    #     'nom': new_moderateur.nom,
-    #     'adresse': new_moderateur.adresse,
-    #     'role': new_moderateur.role,
-    #     'username': new_moderateur.username,
-    #     'image': new_moderateur.image,
-    #     'telephone': new_moderateur.telephone,
-    #     'prenom': new_moderateur.prenom,
-    #     'type_user': new_moderateur.type_user
-    # }
-    # access_token = create_access_token(identity=new_moderateur.IDuser, additional_claims=additional_claims)
     return new_moderateur
 
 # Service de Lecture
 def get_moderateur_by_id(moderateur_id):
-    return Moderateur.query.get(moderateur_id)
+    return Moderateur.query.filter_by(IDmoderateur=moderateur_id, is_deleted=False).first()
 
 def get_all_moderateurs():
     return Moderateur.query.filter_by(is_deleted=False).all()
 
 # Service de Mise à Jour
 def update_moderateur(moderateur_id, nom=None, adresse=None, password=None, role=None, username=None, image=None, telephone=None, prenom=None):
-    moderateur = Moderateur.query.get(moderateur_id)
+    moderateur = Moderateur.query.filter_by(IDmoderateur=moderateur_id, is_deleted=False).first()
     if not moderateur:
         return None
 
@@ -53,7 +38,7 @@ def update_moderateur(moderateur_id, nom=None, adresse=None, password=None, role
     if adresse is not None:
         moderateur.adresse = adresse
     if password is not None:
-        moderateur.password = generate_password_hash(password)
+        moderateur.password = bcrypt.generate_password_hash(password).decode('utf-8')
     if role is not None:
         moderateur.role = role
     if username is not None:
@@ -70,7 +55,7 @@ def update_moderateur(moderateur_id, nom=None, adresse=None, password=None, role
 
 # Service de Suppression Logique
 def delete_moderateur(moderateur_id):
-    moderateur = Moderateur.query.get(moderateur_id)
+    moderateur = Moderateur.query.filter_by(IDmoderateur=moderateur_id, is_deleted=False).first()
     if moderateur:
         moderateur.is_deleted = True
         moderateur.dateDeleted = datetime.utcnow()
@@ -80,7 +65,7 @@ def delete_moderateur(moderateur_id):
 
 # Service d'Authentification
 def authenticate_moderateur(username, password):
-    moderateur = Moderateur.query.filter_by(username=username).first()
-    if moderateur and check_password_hash(moderateur.password, password):
+    moderateur = Moderateur.query.filter_by(username=username, is_deleted=False).first()
+    if moderateur and bcrypt.check_password_hash(moderateur.password, password):
         return moderateur
     return None

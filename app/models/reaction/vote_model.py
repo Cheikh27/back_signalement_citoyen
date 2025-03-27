@@ -5,6 +5,7 @@ from datetime import datetime
 
 class Vote(db.Model):
     __tablename__ = 'votes'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
     IDvote = db.Column(db.Integer, primary_key=True)
     dateCreated = db.Column(db.DateTime, default=datetime.utcnow)  # Date de création
     

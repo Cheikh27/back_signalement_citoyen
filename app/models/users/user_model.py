@@ -3,6 +3,7 @@ from datetime import datetime
 
 class User(db.Model):
     __tablename__ = 'users'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
 
     IDuser = db.Column(db.Integer, primary_key=True)
     nom = db.Column(db.String(50), nullable=False)

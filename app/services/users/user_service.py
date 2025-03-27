@@ -1,19 +1,15 @@
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
-# db = SQLAlchemy()
-# migrate = Migrate()
 from app import db
-
-from app.models import User,Admin,Authorite,Citoyen,Moderateur
-
-
+from app.models import User, Admin, Authorite, Citoyen, Moderateur
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import create_access_token
+
+# Initialiser Bcrypt
+bcrypt = Bcrypt()
 
 # Service de Création
 def create_user(nom, adresse, password, role, username, image, telephone, user_type, **kwargs):
-    hashed_password = generate_password_hash(password)
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = None
     if user_type == 'admin':
         new_user = Admin(
@@ -63,14 +59,14 @@ def create_user(nom, adresse, password, role, username, image, telephone, user_t
 
 # Service de Lecture
 def get_user_by_id(user_id):
-    return User.query.get(user_id)
+    return User.query.filter_by(IDuser=user_id, is_deleted=False).first()
 
 def get_all_users():
     return User.query.filter_by(is_deleted=False).all()
 
 # Service de Mise à Jour
 def update_user(user_id, nom=None, adresse=None, password=None, role=None, username=None, image=None, telephone=None, **kwargs):
-    user = User.query.get(user_id)
+    user = User.query.filter_by(IDuser=user_id, is_deleted=False).first()
     if not user:
         return None
 
@@ -79,7 +75,7 @@ def update_user(user_id, nom=None, adresse=None, password=None, role=None, usern
     if adresse is not None:
         user.adresse = adresse
     if password is not None:
-        user.password = generate_password_hash(password)
+        user.password = bcrypt.generate_password_hash(password).decode('utf-8')
     if role is not None:
         user.role = role
     if username is not None:
@@ -109,7 +105,7 @@ def update_user(user_id, nom=None, adresse=None, password=None, role=None, usern
 
 # Service de Suppression Logique
 def delete_user(user_id):
-    user = User.query.get(user_id)
+    user = User.query.filter_by(IDuser=user_id, is_deleted=False).first()
     if user:
         user.is_deleted = True
         user.dateDeleted = datetime.utcnow()
@@ -119,7 +115,7 @@ def delete_user(user_id):
 
 # Service d'Authentification
 def authenticate_user(username, password):
-    user = User.query.filter_by(username=username).first()
-    if user and check_password_hash(user.password, password):
+    user = User.query.filter_by(username=username, is_deleted=False).first()
+    if user and bcrypt.check_password_hash(user.password, password):
         return user
     return None
