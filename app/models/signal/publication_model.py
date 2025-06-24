@@ -27,13 +27,7 @@ class Publication(db.Model):
     PartagerPublication = db.relationship('PartagerPublication', backref='publications', lazy=True)
     CommentairePublication = db.relationship('CommentairePublication', backref='publications', lazy=True)
 
-    @property
-    def element(self):
-        return zlib.decompress(self._element).decode('utf-8')
 
-    @element.setter
-    def element(self, value):
-        self._element = zlib.compress(value.encode('utf-8'))
 
     def __repr__(self):
         return (f"<Publication ID: {self.IDpublication}, description: {self.description}, "

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify # type: ignore
 import logging
 from app import cache
 from app.services.autres.groupe_service import (

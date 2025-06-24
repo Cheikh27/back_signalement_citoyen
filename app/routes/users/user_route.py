@@ -369,7 +369,7 @@ def login():
 
         user = authenticate_user(data['username'], data['password'])
         if not user:
-            return jsonify({'message': 'Authentification échouée'}), 401
+            return jsonify({'message': 'Authentification échouée '}), 401
             
         access_token = create_access_token(identity=user.IDuser)
         return jsonify({

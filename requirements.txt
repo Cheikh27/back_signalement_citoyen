@@ -50,3 +50,9 @@ Flask-SocketIO==5.5.1
 flasgger==0.9.7.1
 
 #pour la compression et decrompression on utilise zlib qui est implementer par python
+
+# pip uninstall bunnycdn-storage
+# pip install bunnycdn-storage
+
+supabase==2.15.3
+requests==2.32.4

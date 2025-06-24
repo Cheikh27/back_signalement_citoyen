@@ -6,6 +6,7 @@ from app.services.signal.publication_service import (
     get_publications_by_autorite, get_publications_by_signalement,
     update_publication, delete_publication
 )
+from app.services.notification.supabase_notification_service import send_notification, send_to_multiple_users
 
 # Configurer le logging
 logging.basicConfig(level=logging.INFO)
@@ -78,6 +79,21 @@ def add_publication():
             signalement_id=data['signalement_id'],
             IDmoderateur=data.get("moderateur_id")
         )
+
+        from app.models.signal.signalement_model import Signalement
+        signalement = Signalement.query.get(data['signalement_id'])
+        
+        if signalement:
+            send_notification(
+                user_id=signalement.citoyenID,
+                title="📢 Réponse officielle !",
+                message=f"Une autorité a publié une réponse à votre signalement: '{data['titre']}'",
+                entity_type='publication',
+                entity_id=nouvelle_publication.IDpublication,
+                priority='urgent',  # Réponse officielle = urgent
+                category='status'
+            )
+            
         logger.info(f"Nouvelle publication créée avec l'ID: {nouvelle_publication.IDpublication}")
         return jsonify({'id': nouvelle_publication.IDpublication}), 201
 

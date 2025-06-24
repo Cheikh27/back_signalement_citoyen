@@ -1,99 +1,146 @@
-import pytest # type: ignore
-from unittest.mock import patch, MagicMock
+import pytest
 from flask import Flask
-from app.routes.autres.groupe_route import groupe_bp
+from flask.testing import FlaskClient
+from app import create_app, db
+from app.models import Groupe
 
+# @pytest.fixture
+# def client() -> FlaskClient: # type: ignore
+#     app = create_app(config_name='testing')
+#     with app.test_client() as client:
+#         with app.app_context():
+#             db.create_all()
+#         yield client
+#         with app.app_context():
+#             db.session.remove()
+#             db.drop_all()
 @pytest.fixture
-def client():
-    app = Flask(__name__)
-    app.register_blueprint(groupe_bp)
-    app.config['TESTING'] = True
-    return app.test_client()
+def client() -> FlaskClient: # type: ignore
+    """Fixture pour configurer l'application de test."""
+    app = create_app()
 
-@patch('app.services.autres.groupe_service.create_groupe')
-def test_add_groupe(mock_create_groupe, client):
-    mock_groupe = MagicMock()
-    mock_groupe.IDgroupe = 1
-    mock_create_groupe.return_value = mock_groupe
+    # Appliquer une configuration spécifique pour les tests
+    app.config.from_mapping(
+        TESTING=True,
+        SQLALCHEMY_DATABASE_URI="sqlite:///:memory:",  # Utilisation d'une BD temporaire
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
+    )
 
-    response = client.post('/api/groupes/add', json={
-        'nom': 'Test Groupe',
+    with app.test_client() as client:
+        with app.app_context():
+            db.create_all()  # Création des tables
+        yield client
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()  # Nettoyage de la base après chaque test
+
+
+def test_add_groupe(client: FlaskClient):
+    # Test pour ajouter un nouveau groupe
+    test_data = {
+        'nom': 'Nouveau Groupe',
         'description': 'Description du groupe',
-        'statut': 'actif',
-        'image': 'image.png',
+        'image': 'http://example.com/image.png',
         'admin': 1
-    })
-    
-    assert response.status_code == 201
-    assert response.get_json() == {'id': 1}
-
-@patch('app.services.autres.groupe_service.get_groupe_by_id')
-def test_get_groupe(mock_get_groupe_by_id, client):
-    mock_groupe = MagicMock()
-    mock_groupe.IDgroupe = 1
-    mock_groupe.nom = 'Test Groupe'
-    mock_groupe.description = 'Description du groupe'
-    mock_groupe.statut = 'actif'
-    mock_groupe.image = 'image.png'
-    mock_groupe.admin = 1
-    mock_groupe.dateCreated = '2024-02-12'
-    mock_get_groupe_by_id.return_value = mock_groupe
-
-    response = client.get('/api/groupes/1')
-    
-    assert response.status_code == 200
-    assert response.get_json() == {
-        'id': 1,
-        'nom': 'Test Groupe',
-        'description': 'Description du groupe',
-        'statut': 'actif',
-        'image': 'image.png',
-        'admin': 1,
-        'dateCreated': '2024-02-12'
     }
+    response = client.post('/api/groupe/add', json=test_data)
+    assert response.status_code == 201
+    response_json = response.get_json()
+    assert 'id' in response_json
+    groupe = Groupe.query.get(response_json['id'])
+    assert groupe is not None
+    assert groupe.nom == test_data['nom']
+    assert groupe.description == test_data['description']
+    assert groupe.image == test_data['image']
+    assert groupe.admin == test_data['admin']
 
-@patch('app.services.autres.groupe_service.get_all_groupes')
-def test_list_groupes(mock_get_all_groupes, client):
-    mock_groupe = MagicMock()
-    mock_groupe.IDgroupe = 1
-    mock_groupe.nom = 'Test Groupe'
-    mock_groupe.description = 'Description du groupe'
-    mock_groupe.statut = 'actif'
-    mock_groupe.image = 'image.png'
-    mock_groupe.admin = 1
-    mock_groupe.dateCreated = '2024-02-12'
-    mock_get_all_groupes.return_value = [mock_groupe]
+def test_add_groupe_incomplete_data(client: FlaskClient):
+    # Test pour ajouter un groupe avec des données incomplètes
+    test_data = {
+        'nom': 'Nouveau Groupe',
+        'description': 'Description du groupe'
+    }
+    response = client.post('/api/groupe/add', json=test_data)
+    assert response.status_code == 400
+    response_json = response.get_json()
+    assert response_json['message'] == 'Bad Request'
 
-    response = client.get('/api/groupes/all')
-    
+def test_get_groupe(client: FlaskClient):
+    # Test pour récupérer un groupe par ID
+    groupe = Groupe(nom='Groupe Test', description='Description', image='http://example.com/image.png', admin=1)
+    db.session.add(groupe)
+    db.session.commit()
+    response = client.get(f'/api/groupe/{groupe.IDgroupe}')
     assert response.status_code == 200
-    assert response.get_json() == [{
-        'id': 1,
-        'nom': 'Test Groupe',
-        'description': 'Description du groupe',
-        'statut': 'actif',
-        'image': 'image.png',
-        'admin': 1,
-        'dateCreated': '2024-02-12'
-    }]
+    response_json = response.get_json()
+    assert response_json['id'] == groupe.IDgroupe
 
-@patch('app.services.autres.groupe_service.update_groupe')
-def test_modify_groupe(mock_update_groupe, client):
-    mock_groupe = MagicMock()
-    mock_groupe.IDgroupe = 1
-    mock_update_groupe.return_value = mock_groupe
+def test_get_groupe_not_found(client: FlaskClient):
+    # Test pour récupérer un groupe inexistant
+    response = client.get('/api/groupe/999')
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
 
-    response = client.put('/api/groupes/update/1', json={
-        'nom': 'Groupe Modifié'
-    })
-    
+def test_list_groupes(client: FlaskClient):
+    # Test pour lister tous les groupes
+    groupe1 = Groupe(nom='Groupe 1', description='Description 1', image='http://example.com/image1.png', admin=1)
+    groupe2 = Groupe(nom='Groupe 2', description='Description 2', image='http://example.com/image2.png', admin=2)
+    db.session.add(groupe1)
+    db.session.add(groupe2)
+    db.session.commit()
+    response = client.get('/api/groupe/all')
     assert response.status_code == 200
-    assert response.get_json() == {'id': 1}
+    response_json = response.get_json()
+    assert len(response_json) == 2
 
-@patch('app.services.autres.groupe_service.delete_groupe')
-def test_remove_groupe(mock_delete_groupe, client):
-    mock_delete_groupe.return_value = True
+def test_modify_groupe(client: FlaskClient):
+    # Test pour modifier un groupe
+    groupe = Groupe(nom='Groupe Test', description='Description', image='http://example.com/image.png', admin=1)
+    db.session.add(groupe)
+    db.session.commit()
+    test_data = {
+        'nom': 'Nouveau Nom',
+        'description': 'Nouvelle Description',
+        'image': 'http://example.com/new_image.png',
+        'admin': 2
+    }
+    response = client.put(f'/api/groupe/update/{groupe.IDgroupe}', json=test_data)
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert 'id' in response_json
+    updated_groupe = Groupe.query.get(response_json['id'])
+    assert updated_groupe.nom == test_data['nom']
+    assert updated_groupe.description == test_data['description']
+    assert updated_groupe.image == test_data['image']
+    assert updated_groupe.admin == test_data['admin']
 
-    response = client.delete('/api/groupes/delete/1')
-    
+def test_modify_groupe_not_found(client: FlaskClient):
+    # Test pour modifier un groupe inexistant
+    test_data = {
+        'nom': 'Nouveau Nom',
+        'description': 'Nouvelle Description',
+        'image': 'http://example.com/new_image.png',
+        'admin': 2
+    }
+    response = client.put('/api/groupe/update/999', json=test_data)
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
+
+def test_remove_groupe(client: FlaskClient):
+    # Test pour supprimer un groupe
+    groupe = Groupe(nom='Groupe Test', description='Description', image='http://example.com/image.png', admin=1)
+    db.session.add(groupe)
+    db.session.commit()
+    response = client.delete(f'/api/groupe/delete/{groupe.IDgroupe}')
     assert response.status_code == 204
+    deleted_groupe = Groupe.query.get(groupe.IDgroupe)
+    assert deleted_groupe is None
+
+def test_remove_groupe_not_found(client: FlaskClient):
+    # Test pour supprimer un groupe inexistant
+    response = client.delete('/api/groupe/delete/999')
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'

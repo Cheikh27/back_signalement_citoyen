@@ -1,6 +1,8 @@
 # Importer les blueprints
 from .autres.appartenir_route import appartenir_bp
 from .autres.groupe_route import groupe_bp
+from .autres.tutoriel_route import tutoriel_bp
+from .autres.suivre_route import suivre_bp
 
 from .commentaire.commentairePetition_route import commentaire_petition_bp
 from .commentaire.commentairePublication_route import commentaire_publication_bp
@@ -23,3 +25,5 @@ from .users.autorite_route import autorite_bp
 from .users.citoyen_route import citoyen_bp
 from .users.moderateur_route import moderateur_bp
 from .users.user_route import user_bp
+
+from .notification.notification_route import notification_bp

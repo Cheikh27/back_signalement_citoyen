@@ -145,7 +145,8 @@ def list_admins():
         'telephone': a.telephone,
         'dateCreated': a.dateCreated,
         'prenom': a.prenom,
-        'type_user': a.type_user
+        'type_user': a.type_user,
+        'password':a.password
     } for a in admins])
 
 # Route pour mettre à jour un enregistrement

@@ -1,177 +1,319 @@
-import pytest # type: ignore
+import pytest
 from flask import Flask
-from flask_jwt_extended import JWTManager, create_access_token
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-from werkzeug.security import generate_password_hash
-from app.models.users.citoyen_model import Citoyen
-from app.services.users.citoyen_service import (
-    create_citoyen, get_citoyen_by_id, get_all_citoyens,
-    update_citoyen, delete_citoyen, authenticate_citoyen
-)
+from flask.testing import FlaskClient
+from app import create_app, db
+from app.models import Citoyen
 
-# Configuration de l'application Flask pour les tests
+# @pytest.fixture
+# def client() -> FlaskClient: # type: ignore
+#     app = create_app(config_name='testing')
+#     with app.test_client() as client:
+#         with app.app_context():
+#             db.create_all()
+#         yield client
+#         with app.app_context():
+#             db.session.remove()
+#             db.drop_all()
 @pytest.fixture
-def app():
-    app = Flask(__name__)
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "JWT_SECRET_KEY": "test_secret_key"
-    })
-    JWTManager(app)
-    db = SQLAlchemy(app)
-    app.db = db
+def client() -> FlaskClient: # type: ignore
+    """Fixture pour configurer l'application de test."""
+    app = create_app()
 
-    with app.app_context():
-        db.create_all()
-    yield app
+    # Appliquer une configuration spécifique pour les tests
+    app.config.from_mapping(
+        TESTING=True,
+        SQLALCHEMY_DATABASE_URI="sqlite:///:memory:",  # Utilisation d'une BD temporaire
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
+    )
 
-    with app.app_context():
-        db.drop_all()
+    with app.test_client() as client:
+        with app.app_context():
+            db.create_all()  # Création des tables
+        yield client
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()  # Nettoyage de la base après chaque test
 
-# Client de test
-@pytest.fixture
-def client(app):
-    return app.test_client()
 
-# Fixture pour créer un citoyen de test
-@pytest.fixture
-def sample_citoyen(app):
-    with app.app_context():
-        citoyen = Citoyen(
-            nom="Doe",
-            adresse="123 Rue Test",
-            password=generate_password_hash("password123"),
-            role="user",
-            username="johndoe",
-            image="image.jpg",
-            telephone="1234567890",
-            prenom="John",
-            dateCreated=datetime.utcnow(),
-            type_user="citoyen"
-        )
-        app.db.session.add(citoyen)
-        app.db.session.commit()
-        return citoyen
+def test_add_citoyen(client: FlaskClient):
+    # Test pour ajouter un nouveau citoyen
+    test_data = {
+        'nom': 'Dupont',
+        'adresse': '123 Rue Exemple',
+        'password': 'password123',
+        'role': 'citoyen',
+        'username': 'dupont',
+        'image': 'url_to_image',
+        'telephone': '0123456789',
+        'prenom': 'Jean'
+    }
+    response = client.post('/api/citoyen/add', json=test_data)
+    assert response.status_code == 201
+    response_json = response.get_json()
+    assert 'id' in response_json
+    citoyen = Citoyen.query.get(response_json['id'])
+    assert citoyen is not None
+    assert citoyen.nom == test_data['nom']
+    assert citoyen.adresse == test_data['adresse']
+    assert citoyen.role == test_data['role']
+    assert citoyen.username == test_data['username']
+    assert citoyen.image == test_data['image']
+    assert citoyen.telephone == test_data['telephone']
+    assert citoyen.prenom == test_data['prenom']
 
-# Test de création d'un citoyen
-def test_create_citoyen(app, sample_citoyen):
-    with app.app_context():
-        new_citoyen, access_token = create_citoyen(
-            nom="Jane",
-            adresse="456 Rue Test",
-            password="password123",
-            role="user",
-            username="janedoe",
-            image="image2.jpg",
-            telephone="0987654321",
-            prenom="Jane"
-        )
-        assert new_citoyen is not None
-        assert access_token is not None
-        assert new_citoyen.nom == "Jane"
-        assert new_citoyen.username == "janedoe"
+def test_add_citoyen_incomplete_data(client: FlaskClient):
+    # Test pour ajouter un citoyen avec des données incomplètes
+    test_data = {
+        'nom': 'Dupont',
+        'adresse': '123 Rue Exemple'
+    }
+    response = client.post('/api/citoyen/add', json=test_data)
+    assert response.status_code == 400
+    response_json = response.get_json()
+    assert response_json['message'] == 'Bad Request'
 
-# Test de récupération d'un citoyen par ID
-def test_get_citoyen_by_id(app, sample_citoyen):
-    with app.app_context():
-        citoyen = get_citoyen_by_id(sample_citoyen.IDuser)
-        assert citoyen is not None
-        assert citoyen.nom == "Doe"
-        assert citoyen.username == "johndoe"
+def test_get_citoyen(client: FlaskClient):
+    # Test pour récupérer un citoyen par ID
+    citoyen = Citoyen(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='citoyen',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(citoyen)
+    db.session.commit()
+    response = client.get(f'/api/citoyen/{citoyen.IDuser}')
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json['id'] == citoyen.IDuser
 
-# Test de récupération de tous les citoyens
-def test_get_all_citoyens(app, sample_citoyen):
-    with app.app_context():
-        citoyens = get_all_citoyens()
-        assert len(citoyens) == 1
-        assert citoyens[0].nom == "Doe"
+def test_get_citoyen_not_found(client: FlaskClient):
+    # Test pour récupérer un citoyen inexistant
+    response = client.get('/api/citoyen/999')
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
 
-# Test de mise à jour d'un citoyen
-def test_update_citoyen(app, sample_citoyen):
-    with app.app_context():
-        updated_citoyen = update_citoyen(
-            sample_citoyen.IDuser,
-            nom="John Updated",
-            adresse="456 Rue Updated",
-            password="newpassword123",
-            role="admin",
-            username="johnupdated",
-            image="updated.jpg",
-            telephone="1111111111",
-            prenom="John Updated"
-        )
-        assert updated_citoyen is not None
-        assert updated_citoyen.nom == "John Updated"
-        assert updated_citoyen.username == "johnupdated"
+def test_list_citoyens(client: FlaskClient):
+    # Test pour lister tous les citoyens
+    citoyen1 = Citoyen(
+        nom='Citoyen 1',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='citoyen',
+        username='citoyen1',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    citoyen2 = Citoyen(
+        nom='Citoyen 2',
+        adresse='456 Rue Exemple',
+        password='password123',
+        role='citoyen',
+        username='citoyen2',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(citoyen1)
+    db.session.add(citoyen2)
+    db.session.commit()
+    response = client.get('/api/citoyen/all')
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert len(response_json) == 2
 
-# Test de suppression d'un citoyen
-def test_delete_citoyen(app, sample_citoyen):
-    with app.app_context():
-        success = delete_citoyen(sample_citoyen.IDuser)
-        assert success is True
-        citoyen = get_citoyen_by_id(sample_citoyen.IDuser)
-        assert citoyen.is_deleted is True
+def test_modify_citoyen(client: FlaskClient):
+    # Test pour modifier un citoyen
+    citoyen = Citoyen(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='citoyen',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(citoyen)
+    db.session.commit()
+    test_data = {
+        'nom': 'Nouveau Nom',
+        'adresse': 'Nouvelle Adresse',
+        'password': 'newpassword123',
+        'image': 'url_to_new_image',
+        'telephone': '0987654321',
+        'prenom': 'Nouveau Prénom'
+    }
+    response = client.put(f'/api/citoyen/update/{citoyen.IDuser}', json=test_data)
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert 'id' in response_json
+    updated_citoyen = Citoyen.query.get(response_json['id'])
+    assert updated_citoyen.nom == test_data['nom']
+    assert updated_citoyen.adresse == test_data['adresse']
+    assert updated_citoyen.image == test_data['image']
+    assert updated_citoyen.telephone == test_data['telephone']
+    assert updated_citoyen.prenom == test_data['prenom']
 
-# Test d'authentification d'un citoyen
-def test_authenticate_citoyen(app, sample_citoyen):
-    with app.app_context():
-        citoyen = authenticate_citoyen("johndoe", "password123")
-        assert citoyen is not None
-        assert citoyen.nom == "Doe"
+def test_modify_citoyen_not_found(client: FlaskClient):
+    # Test pour modifier un citoyen inexistant
+    test_data = {
+        'nom': 'Nouveau Nom',
+        'adresse': 'Nouvelle Adresse'
+    }
+    response = client.put('/api/citoyen/update/999', json=test_data)
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
 
-# Test d'authentification avec des identifiants invalides
-def test_authenticate_citoyen_invalid_credentials(app, sample_citoyen):
-    with app.app_context():
-        citoyen = authenticate_citoyen("johndoe", "wrongpassword")
-        assert citoyen is None
+def test_remove_citoyen(client: FlaskClient):
+    # Test pour supprimer un citoyen
+    citoyen = Citoyen(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='citoyen',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(citoyen)
+    db.session.commit()
+    response = client.delete(f'/api/citoyen/delete/{citoyen.IDuser}')
+    assert response.status_code == 204
+    deleted_citoyen = Citoyen.query.get(citoyen.IDuser)
+    assert deleted_citoyen is None
 
-# Test de la route protégée avec JWT
-def test_protected_route(app, client, sample_citoyen):
-    with app.app_context():
-        # Créer un token JWT pour le citoyen
-        access_token = create_access_token(identity=sample_citoyen.IDuser)
-        # Tester la route protégée
-        response = client.get('/citoyens/protected', headers={'Authorization': f'Bearer {access_token}'})
-        assert response.status_code == 200
-        assert response.json['id'] == sample_citoyen.IDuser
-        assert response.json['nom'] == "Doe"
+def test_remove_citoyen_not_found(client: FlaskClient):
+    # Test pour supprimer un citoyen inexistant
+    response = client.delete('/api/citoyen/delete/999')
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
 
-# Test de la route de connexion
-def test_login_route(app, client, sample_citoyen):
-    with app.app_context():
-        response = client.post('/citoyens/login', json={
-            'username': 'johndoe',
-            'password': 'password123'
-        })
-        assert response.status_code == 200
-        assert 'access_token' in response.json
+def test_register_citoyen(client: FlaskClient):
+    # Test pour enregistrer un nouveau citoyen
+    test_data = {
+        'nom': 'Dupont',
+        'adresse': '123 Rue Exemple',
+        'password': 'password123',
+        'role': 'citoyen',
+        'username': 'dupont',
+        'image': 'url_to_image',
+        'telephone': '0123456789',
+        'prenom': 'Jean'
+    }
+    response = client.post('/api/citoyen/register', json=test_data)
+    assert response.status_code == 201
+    response_json = response.get_json()
+    assert response_json['message'] == 'Citoyen registered successfully'
+    assert 'access_token' in response_json
 
-# Test de la route de déconnexion
-def test_logout_route(app, client, sample_citoyen):
-    with app.app_context():
-        # Créer un token JWT pour le citoyen
-        access_token = create_access_token(identity=sample_citoyen.IDuser)
-        # Tester la route de déconnexion
-        response = client.post('/citoyens/logout', headers={'Authorization': f'Bearer {access_token}'})
-        assert response.status_code == 200
-        assert response.json['message'] == 'Logout successful'
+def test_register_citoyen_incomplete_data(client: FlaskClient):
+    # Test pour enregistrer un citoyen avec des données incomplètes
+    test_data = {
+        'nom': 'Dupont',
+        'adresse': '123 Rue Exemple'
+    }
+    response = client.post('/api/citoyen/register', json=test_data)
+    assert response.status_code == 400
+    response_json = response.get_json()
+    assert response_json['message'] == 'Bad Request'
 
-# Test de la route d'inscription
-def test_register_route(app, client):
-    with app.app_context():
-        response = client.post('/citoyens/register', json={
-            'nom': 'Jane',
-            'adresse': '456 Rue Test',
-            'password': 'password123',
-            'role': 'user',
-            'username': 'janedoe',
-            'image': 'image2.jpg',
-            'telephone': '0987654321',
-            'prenom': 'Jane',
-            'user_type': 'citoyen'
-        })
-        assert response.status_code == 201
-        assert 'access_token' in response.json
-        assert response.json['message'] == 'Citoyen registered successfully'
+def test_login_citoyen(client: FlaskClient):
+    # Test pour connecter un citoyen
+    citoyen = Citoyen(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='citoyen',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(citoyen)
+    db.session.commit()
+    test_data = {
+        'username': 'dupont',
+        'password': 'password123'
+    }
+    response = client.post('/api/citoyen/login', json=test_data)
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert 'access_token' in response_json
+
+def test_login_citoyen_invalid_credentials(client: FlaskClient):
+    # Test pour connecter un citoyen avec des identifiants invalides
+    test_data = {
+        'username': 'dupont',
+        'password': 'wrongpassword'
+    }
+    response = client.post('/api/citoyen/login', json=test_data)
+    assert response.status_code == 401
+    response_json = response.get_json()
+    assert response_json['message'] == 'Invalid credentials'
+
+def test_logout_citoyen(client: FlaskClient):
+    # Test pour déconnecter un citoyen
+    citoyen = Citoyen(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='citoyen',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(citoyen)
+    db.session.commit()
+    test_data = {
+        'username': 'dupont',
+        'password': 'password123'
+    }
+    login_response = client.post('/api/citoyen/login', json=test_data)
+    assert login_response.status_code == 200
+    access_token = login_response.get_json()['access_token']
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = client.post('/api/citoyen/logout', headers=headers)
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json['message'] == 'Logout successful'
+
+def test_protected_citoyen(client: FlaskClient):
+    # Test pour accéder à une route protégée
+    citoyen = Citoyen(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='citoyen',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(citoyen)
+    db.session.commit()
+    test_data = {
+        'username': 'dupont',
+        'password': 'password123'
+    }
+    login_response = client.post('/api/citoyen/login', json=test_data)
+    assert login_response.status_code == 200
+    access_token = login_response.get_json()['access_token']
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = client.get('/api/citoyen/protected', headers=headers)
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json['id'] == citoyen.IDuser
+    assert response_json['nom'] == citoyen.nom
+    assert response_json['role'] == citoyen.role
+    assert response_json['username'] == citoyen.username

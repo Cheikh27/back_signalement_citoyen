@@ -6,6 +6,7 @@ from app.services.commentaire.commentaireSignalement_service import (
     get_commentaires_signalement_by_citoyen, get_commentaires_signalement_by_signalement,
     update_commentaire_signalement, delete_commentaire_signalement
 )
+from app.services.notification.supabase_notification_service import send_notification, send_to_multiple_users
 
 # Configurer le logging
 logging.basicConfig(level=logging.INFO)
@@ -58,6 +59,32 @@ def add_commentaire_signalement():
             citoyen_id=data['citoyen_id'],
             signalement_id=data['signalement_id']
         )
+
+        send_notification(
+            user_id=data['citoyen_id'],
+            title="💬 Commentaire publié",
+            message="Votre commentaire a été ajouté avec succès",
+            entity_type='signalement',
+            entity_id=data['signalement_id'],
+            priority='low',
+            category='social'
+        )
+        
+        # 🔥 NOTIFICATION AU CRÉATEUR DU SIGNALEMENT
+        from app.models.signal.signalement_model import Signalement
+        signalement = Signalement.query.get(data['signalement_id'])
+        
+        if signalement and signalement.citoyenID != data['citoyen_id']:
+            send_notification(
+                user_id=signalement.citoyenID,
+                title="💬 Nouveau commentaire",
+                message=f"Quelqu'un a commenté votre signalement",
+                entity_type='signalement',
+                entity_id=data['signalement_id'],
+                priority='normal',
+                category='social'
+            )
+            
         logger.info(f"Nouveau commentaire de signalement créé avec l'ID: {nouveau_commentaire.IDcommentaire}")
         return jsonify({'id': nouveau_commentaire.IDcommentaire}), 201
 
@@ -144,8 +171,8 @@ def list_commentaires_signalement_by_citoyen(citoyen_id):
     } for c in commentaires])
 
 # Route pour obtenir les commentaires de signalement d'un signalement
-@commentaire_signalement_bp.route('/<int:signalement_id>/signalements', methods=['GET'])
-@cache.cached(timeout=60, key_prefix='list_commentaires_signalement_by_signalement')
+@commentaire_signalement_bp.route('/<int:signalement_id>/Commentaire_signalements', methods=['GET'])
+# @cache.cached(timeout=0, key_prefix='list_commentaires_signalement_by_signalement')
 def list_commentaires_signalement_by_signalement(signalement_id):
     """
     Récupère tous les commentaires de signalement liés à un signalement spécifique.
@@ -166,8 +193,11 @@ def list_commentaires_signalement_by_signalement(signalement_id):
         'id': c.IDcommentaire,
         'description': c.description,
         'citoyen_id': c.citoyenID,
-        'dateCreated': c.dateCreated
+        'dateCreated': c.dateCreated,
+        'signalementID':c.signalementID
     } for c in commentaires])
+
+
 
 # Route pour mettre à jour un commentaire de signalement
 @commentaire_signalement_bp.route('/update/<int:commentaire_id>', methods=['PUT'])

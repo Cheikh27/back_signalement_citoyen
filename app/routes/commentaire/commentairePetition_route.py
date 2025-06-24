@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 import logging
 from app import cache
@@ -6,6 +7,7 @@ from app.services.commentaire.commentairePetition_service import (
     get_commentaires_by_citoyen, get_commentaires_by_petition,
     update_commentaire, delete_commentaire
 )
+from app.services.notification.supabase_notification_service import send_notification, send_to_multiple_users
 
 # Configurer le logging
 logging.basicConfig(level=logging.INFO)
@@ -58,7 +60,98 @@ def add_commentaire():
             citoyen_id=data['citoyen_id'],
             petition_id=data['petition_id']
         )
+
         logger.info(f"Nouveau commentaire créé avec l'ID: {nouveau_commentaire.IDcommentaire}")
+
+        try:
+            # 1. Notification pour l'auteur du commentaire
+            send_notification(
+                user_id=data['citoyen_id'],
+                title="💬 Commentaire publié",
+                message="Votre commentaire sur la pétition a été publié avec succès",
+                data={
+                    'comment_id': nouveau_commentaire.IDcommentaire,
+                    'comment_preview': data['description'][:100] + "..." if len(data['description']) > 100 else data['description'],
+                    'action': 'comment_created'
+                },
+                entity_type='petition',
+                entity_id=data['petition_id'],
+                priority='low',
+                category='social'
+            )
+            
+            # 2. Notification pour le créateur de la pétition
+            from app.models.signal.petition_model import Petition
+            petition = Petition.query.get(data['petition_id'])
+            
+            if petition and petition.citoyenID != data['citoyen_id']:  # Ne pas se notifier soi-même
+                send_notification(
+                    user_id=petition.citoyenID,
+                    title="💬 Nouveau commentaire sur votre pétition",
+                    message=f"Quelqu'un a commenté votre pétition: '{data['description'][:50]}...'",
+                    data={
+                        'comment_id': nouveau_commentaire.IDcommentaire,
+                        'commenter_id': data['citoyen_id'],
+                        'petition_title': petition.titre[:50] + "..." if len(petition.titre) > 50 else petition.titre,
+                        'comment_preview': data['description'][:100] + "..." if len(data['description']) > 100 else data['description'],
+                        'action': 'comment_received'
+                    },
+                    entity_type='petition',
+                    entity_id=data['petition_id'],
+                    priority='normal',
+                    category='social'
+                )
+                
+                logger.info(f"Notification envoyée au créateur de la pétition {petition.citoyenID}")
+            
+            # 3. Notifier les autres commentateurs de cette pétition (engagement communautaire)
+            try:
+                from app.models.commentaire.commentairePetition_model import CommentairePetition
+                
+                # Récupérer les IDs des autres commentateurs (actifs dans les 30 derniers jours)
+                thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+                other_commenters = CommentairePetition.query.filter(
+                    CommentairePetition.petitionID == data['petition_id'],
+                    CommentairePetition.citoyenID != data['citoyen_id'],  # Pas l'auteur actuel
+                    CommentairePetition.citoyenID != (petition.citoyenID if petition else None),  # Pas le créateur (déjà notifié)
+                    CommentairePetition.dateCreated >= thirty_days_ago
+                ).distinct(CommentairePetition.citoyenID).all()
+                
+                if other_commenters:
+                    commenter_ids = list(set([c.citoyenID for c in other_commenters]))  # Dédupliquer
+                    
+                    if commenter_ids:
+                        send_to_multiple_users(
+                            user_ids=commenter_ids,
+                            title="💭 Nouveau commentaire",
+                            message=f"Un nouveau commentaire a été ajouté à une pétition que vous suivez",
+                            data={
+                                'comment_id': nouveau_commentaire.IDcommentaire,
+                                'petition_id': data['petition_id'],
+                                'petition_title': petition.titre[:50] + "..." if petition and len(petition.titre) > 50 else (petition.titre if petition else ""),
+                                'action': 'community_comment'
+                            },
+                            entity_type='petition',
+                            entity_id=data['petition_id'],
+                            priority='low',
+                            category='social'
+                        )
+                        
+                        logger.info(f"Notification envoyée à {len(commenter_ids)} autres commentateurs")
+                
+            except Exception as community_notif_error:
+                logger.warning(f"Erreur notifications communautaires: {community_notif_error}")
+                # Ne pas faire échouer l'opération principale
+                
+        except Exception as notif_error:
+            logger.warning(f"Erreur système notifications commentaire pétition: {notif_error}")
+            # Les notifications ne doivent jamais faire échouer l'opération principale
+        
+        return jsonify({
+            'id': nouveau_commentaire.IDcommentaire,
+            'message': 'Commentaire créé avec succès'
+        }), 201
+    
         return jsonify({'id': nouveau_commentaire.IDcommentaire}), 201
 
     except Exception as e:
@@ -144,7 +237,7 @@ def list_commentaires_by_citoyen(citoyen_id):
     } for c in commentaires])
 
 # Route pour obtenir les commentaires d'une pétition
-@commentaire_petition_bp.route('/<int:petition_id>/petitions', methods=['GET'])
+@commentaire_petition_bp.route('/<int:petition_id>/commentaires', methods=['GET'])
 @cache.cached(timeout=60, key_prefix='list_commentaires_by_petition')
 def list_commentaires_by_petition(petition_id):
     """

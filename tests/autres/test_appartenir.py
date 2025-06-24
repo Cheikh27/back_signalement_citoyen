@@ -1,54 +1,156 @@
-import pytest # type: ignore
-from unittest.mock import patch
-from flask import json
-from app import create_app
-from app.models.autres.appartenir_model import Appartenir
+import pytest
+from flask import Flask
+from flask.testing import FlaskClient
+from app import create_app, db
+from app.models import Appartenir
 
+# @pytest.fixture
+# def client() -> FlaskClient: # type: ignore
+#     app = create_app(config_name='testing')
+#     with app.test_client() as client:
+#         with app.app_context():
+#             db.create_all()
+#         yield client
+#         with app.app_context():
+#             db.session.remove()
+#             db.drop_all()
 @pytest.fixture
-def client():
-    app = create_app("testing")  # Assurez-vous d'avoir une configuration 'testing'
-    app.config['TESTING'] = True
-    client = app.test_client()
-    yield client
+def client() -> FlaskClient: # type: ignore
+    """Fixture pour configurer l'application de test."""
+    app = create_app()
+    # Appliquer une configuration spécifique pour les tests
+    app.config.from_mapping(
+        TESTING=True,
+        SQLALCHEMY_DATABASE_URI="sqlite:///:memory:",  # Utilisation d'une BD temporaire
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
+    )
 
-@patch('app.services.autres.appartenir_service.create_appartenir')
-def test_add_appartenir(mock_create, client):
-    mock_create.return_value = Appartenir(IDappartenir=1, citoyenID=10, groupeID=20)
-    
-    response = client.post('/api/appartenirs/add', json={'citoyen_id': 10, 'groupe_id': 20})
-    assert response.status_code == 201
-    assert response.json == {'id': 1}
+    with app.test_client() as client:
+        with app.app_context():
+            db.create_all()  # Création des tables
+        yield client
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()  # Nettoyage de la base après chaque test
 
-@patch('app.services.autres.appartenir_service.get_appartenir_by_id')
-def test_get_appartenir(mock_get, client):
-    mock_get.return_value = Appartenir(IDappartenir=1, citoyenID=10, groupeID=20, dateCreated="2024-01-01")
-    
-    response = client.get('/api/appartenirs/1')
-    assert response.status_code == 200
-    assert response.json == {
-        'id': 1, 'dateCreated': "2024-01-01", 'citoyen_id': 10, 'groupe_id': 20
+
+def test_add_appartenir(client: FlaskClient):
+    # Test pour ajouter un nouvel enregistrement
+    test_data = {
+        'citoyen_id': 1,
+        'groupe_id': 1
     }
+    response = client.post('/api/appartenir/add', json=test_data)
+    assert response.status_code == 201
+    response_json = response.get_json()
+    assert 'id' in response_json
+    appartenir = Appartenir.query.get(response_json['id'])
+    assert appartenir is not None
+    assert appartenir.citoyenID == test_data['citoyen_id']
+    assert appartenir.groupeID == test_data['groupe_id']
 
-@patch('app.services.autres.appartenir_service.get_all_appartenirs')
-def test_list_appartenirs(mock_get_all, client):
-    mock_get_all.return_value = [Appartenir(IDappartenir=1, citoyenID=10, groupeID=20, dateCreated="2024-01-01")]
-    
-    response = client.get('/api/appartenirs/all')
+def test_add_appartenir_incomplete_data(client: FlaskClient):
+    # Test pour ajouter un enregistrement avec des données incomplètes
+    test_data = {
+        'citoyen_id': 1
+    }
+    response = client.post('/api/appartenir/add', json=test_data)
+    assert response.status_code == 400
+    response_json = response.get_json()
+    assert response_json['message'] == 'Bad Request'
+
+def test_get_appartenir(client: FlaskClient):
+    # Test pour récupérer un enregistrement par ID
+    appartenir = Appartenir(citoyenID=1, groupeID=1)
+    db.session.add(appartenir)
+    db.session.commit()
+    response = client.get(f'/api/appartenir/{appartenir.IDappartenir}')
     assert response.status_code == 200
-    assert len(response.json) == 1
-    assert response.json[0]['id'] == 1
+    response_json = response.get_json()
+    assert response_json['id'] == appartenir.IDappartenir
 
-@patch('app.services.autres.appartenir_service.update_appartenir')
-def test_modify_appartenir(mock_update, client):
-    mock_update.return_value = Appartenir(IDappartenir=1, citoyenID=15, groupeID=25)
-    
-    response = client.put('/api/appartenirs/update/1', json={'citoyen_id': 15, 'groupe_id': 25})
+def test_get_appartenir_not_found(client: FlaskClient):
+    # Test pour récupérer un enregistrement inexistant
+    response = client.get('/api/appartenir/999')
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
+
+def test_list_appartenirs(client: FlaskClient):
+    # Test pour lister tous les enregistrements
+    appartenir1 = Appartenir(citoyenID=1, groupeID=1)
+    appartenir2 = Appartenir(citoyenID=2, groupeID=2)
+    db.session.add(appartenir1)
+    db.session.add(appartenir2)
+    db.session.commit()
+    response = client.get('/api/appartenir/all')
     assert response.status_code == 200
-    assert response.json == {'id': 1}
+    response_json = response.get_json()
+    assert len(response_json) == 2
 
-@patch('app.services.autres.appartenir_service.delete_appartenir')
-def test_remove_appartenir(mock_delete, client):
-    mock_delete.return_value = True
-    
-    response = client.delete('/api/appartenirs/delete/1')
+def test_list_appartenirs_by_citoyen(client: FlaskClient):
+    # Test pour lister les enregistrements par citoyen
+    appartenir = Appartenir(citoyenID=1, groupeID=1)
+    db.session.add(appartenir)
+    db.session.commit()
+    response = client.get('/api/appartenir/1/citoyens')
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert len(response_json) == 1
+    assert response_json[0]['citoyen_id'] == 1
+
+def test_list_appartenirs_by_groupe(client: FlaskClient):
+    # Test pour lister les enregistrements par groupe
+    appartenir = Appartenir(citoyenID=1, groupeID=1)
+    db.session.add(appartenir)
+    db.session.commit()
+    response = client.get('/api/appartenir/1/groupes')
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert len(response_json) == 1
+    assert response_json[0]['groupe_id'] == 1
+
+def test_modify_appartenir(client: FlaskClient):
+    # Test pour modifier un enregistrement
+    appartenir = Appartenir(citoyenID=1, groupeID=1)
+    db.session.add(appartenir)
+    db.session.commit()
+    test_data = {
+        'citoyen_id': 2,
+        'groupe_id': 2
+    }
+    response = client.put(f'/api/appartenir/update/{appartenir.IDappartenir}', json=test_data)
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert 'id' in response_json
+    updated_appartenir = Appartenir.query.get(response_json['id'])
+    assert updated_appartenir.citoyenID == test_data['citoyen_id']
+    assert updated_appartenir.groupeID == test_data['groupe_id']
+
+def test_modify_appartenir_not_found(client: FlaskClient):
+    # Test pour modifier un enregistrement inexistant
+    test_data = {
+        'citoyen_id': 2,
+        'groupe_id': 2
+    }
+    response = client.put('/api/appartenir/update/999', json=test_data)
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
+
+def test_remove_appartenir(client: FlaskClient):
+    # Test pour supprimer un enregistrement
+    appartenir = Appartenir(citoyenID=1, groupeID=1)
+    db.session.add(appartenir)
+    db.session.commit()
+    response = client.delete(f'/api/appartenir/delete/{appartenir.IDappartenir}')
     assert response.status_code == 204
+    deleted_appartenir = Appartenir.query.get(appartenir.IDappartenir)
+    assert deleted_appartenir is None
+
+def test_remove_appartenir_not_found(client: FlaskClient):
+    # Test pour supprimer un enregistrement inexistant
+    response = client.delete('/api/appartenir/delete/999')
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'

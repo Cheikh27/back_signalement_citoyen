@@ -6,6 +6,8 @@ from app.services.commentaire.commentairePublication_service import (
     get_commentaires_publication_by_citoyen, get_commentaires_publication_by_publication,
     update_commentaire_publication, delete_commentaire_publication
 )
+from app.services.notification.supabase_notification_service import send_notification, send_to_multiple_users
+
 
 # Configurer le logging
 logging.basicConfig(level=logging.INFO)
@@ -58,7 +60,56 @@ def add_commentaire_publication():
             citoyen_id=data['citoyen_id'],
             publication_id=data['publication_id']
         )
+
         logger.info(f"Nouveau commentaire de publication créé avec l'ID: {nouveau_commentaire.IDcommentaire}")
+
+        # 🔔 SYSTÈME DE NOTIFICATIONS
+        try:
+            # 1. Notification pour l'auteur du commentaire
+            send_notification(
+                user_id=data['citoyen_id'],
+                title="💬 Commentaire publié",
+                message="Votre commentaire sur la publication officielle a été publié avec succès",
+                entity_type='publication',
+                entity_id=data['publication_id'],
+                priority='low',
+                category='social'
+            )
+            
+            # 2. Notification pour l'autorité qui a publié
+            from app.models.signal.publication_model import Publication
+            publication = Publication.query.get(data['publication_id'])
+            
+            if publication and publication.autoriteID:
+                send_notification(
+                    user_id=publication.autoriteID,
+                    title="💬 Nouveau commentaire sur votre publication",
+                    message=f"Un citoyen a commenté votre publication officielle: '{data['description'][:50]}...'",
+                    entity_type='publication',
+                    entity_id=data['publication_id'],
+                    priority='high',
+                    category='social'
+                )
+            
+            # 3. Notifier le créateur du signalement original
+            if publication and publication.signalementID:
+                from app.models.signal.signalement_model import Signalement
+                signalement = Signalement.query.get(publication.signalementID)
+                
+                if signalement and signalement.citoyenID != data['citoyen_id']:
+                    send_notification(
+                        user_id=signalement.citoyenID,
+                        title="📢 Commentaire sur la réponse officielle",
+                        message=f"Quelqu'un a commenté la réponse officielle à votre signalement",
+                        entity_type='publication',
+                        entity_id=data['publication_id'],
+                        priority='normal',
+                        category='status'
+                    )
+                
+        except Exception as notif_error:
+            logger.warning(f"Erreur système notifications: {notif_error}")
+            
         return jsonify({'id': nouveau_commentaire.IDcommentaire}), 201
 
     except Exception as e:
@@ -145,7 +196,7 @@ def list_commentaires_publication_by_citoyen(citoyen_id):
 
 # Route pour obtenir les commentaires de publication d'une publication
 @commentaire_publication_bp.route('/<int:publication_id>/publications', methods=['GET'])
-@cache.cached(timeout=60, key_prefix='list_commentaires_publication_by_publication')
+@cache.cached(timeout=60, key_prefix='list_commentaires_publication_by_publicationID')
 def list_commentaires_publication_by_publication(publication_id):
     """
     Récupère tous les commentaires de publication liés à une publication spécifique.

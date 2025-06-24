@@ -6,6 +6,8 @@ from app.services.reaction.appreciation_service import (
     get_appreciations_by_citoyen, get_appreciations_by_publication,
     delete_appreciation
 )
+from app.services.notification.supabase_notification_service import send_notification, send_to_multiple_users
+
 
 # Configurer le logging
 logging.basicConfig(level=logging.INFO)
@@ -55,6 +57,36 @@ def add_appreciation():
             publication_id=data['publication_id']
         )
         logger.info(f"Nouvelle appréciation créée avec l'ID: {nouvelle_appreciation.IDappreciation}")
+        # 🔔 SYSTÈME DE NOTIFICATIONS
+        try:
+            # 1. Notification pour l'auteur de l'appréciation
+            send_notification(
+                user_id=data['citoyen_id'],
+                title="👏 Appréciation enregistrée",
+                message="Votre appréciation a été enregistrée avec succès",
+                entity_type='publication',
+                entity_id=data['publication_id'],
+                priority='low',
+                category='social'
+            )
+            
+            # 2. Notification pour l'autorité qui a publié
+            from app.models.signal.publication_model import Publication
+            publication = Publication.query.get(data['publication_id'])
+            
+            if publication and publication.autoriteID != data['citoyen_id']:
+                send_notification(
+                    user_id=publication.autoriteID,
+                    title="👏 Nouvelle appréciation !",
+                    message="Un citoyen a apprécié votre publication officielle",
+                    entity_type='publication',
+                    entity_id=data['publication_id'],
+                    priority='normal',
+                    category='social'
+                )
+                
+        except Exception as notif_error:
+            logger.warning(f"Erreur notifications appréciation: {notif_error}")
         return jsonify({'id': nouvelle_appreciation.IDappreciation}), 201
 
     except Exception as e:

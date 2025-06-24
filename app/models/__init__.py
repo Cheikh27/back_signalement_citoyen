@@ -2,6 +2,9 @@ from app import db
 # Importez tous les modèles ici
 from .autres.appartenir_model import Appartenir
 from .autres.groupe_model import Groupe
+from .autres.tutoriel_model import Tutoriel
+from .autres.suivre_model import Suivre
+
 
 from .commentaire.commentairePetition_model import CommentairePetition
 from .commentaire.commentairePublication_model import CommentairePublication
@@ -24,6 +27,8 @@ from .users.autorite_model import Authorite
 from .users.citoyen_model import Citoyen
 from .users.moderateur_model import Moderateur
 from .users.user_model import User
+
+from .notification.notification_models import FCMToken, NotificationTemplate, NotificationAnalytics, NotificationPreferences, NotificationHistory
 
 
 

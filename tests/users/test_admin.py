@@ -1,95 +1,317 @@
-import pytest # type: ignore
+import pytest
 from flask import Flask
-from flask_jwt_extended import create_access_token
-from app.routes.users.admin_route import admin_bp
-from app.models.users.admin_model import Admin
-from app.services.users.admin_service import create_admin, get_admin_by_id, get_all_admins, update_admin, delete_admin, authenticate_admin
-from app import db
+from flask.testing import FlaskClient
+from app import create_app, db
+from app.models import Admin
 
+# @pytest.fixture
+# def client() -> FlaskClient: # type: ignore
+#     app = create_app(config_name='testing')
+#     with app.test_client() as client:
+#         with app.app_context():
+#             db.create_all()
+#         yield client
+#         with app.app_context():
+#             db.session.remove()
+#             db.drop_all()
 @pytest.fixture
-def app():
-    app = Flask(__name__)
-    app.config["TESTING"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-    app.config["JWT_SECRET_KEY"] = "test_secret"
-    db.init_app(app)
-    app.register_blueprint(admin_bp, url_prefix="/api")
-    
-    with app.app_context():
-        db.create_all()
-    
-    yield app
-    
-    with app.app_context():
-        db.drop_all()
+def client() -> FlaskClient: # type: ignore
+    """Fixture pour configurer l'application de test."""
+    app = create_app()
 
-@pytest.fixture
-def client(app):
-    return app.test_client()
+    # Appliquer une configuration spécifique pour les tests
+    app.config.from_mapping(
+        TESTING=True,
+        SQLALCHEMY_DATABASE_URI="sqlite:///:memory:",  # Utilisation d'une BD temporaire
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
+    )
 
-@pytest.fixture
-def admin():
-    return create_admin(
-        nom="Test", adresse="Dakar", password="password", role="admin",
-        username="testadmin", image="", telephone="777777777", prenom="User"
-    )[0]
+    with app.test_client() as client:
+        with app.app_context():
+            db.create_all()  # Création des tables
+        yield client
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()  # Nettoyage de la base après chaque test
 
-@pytest.fixture
-def access_token(admin):
-    return create_access_token(identity=admin.IDuser)
 
-# Test d'ajout d'un admin
-def test_add_admin(client):
-    response = client.post("/api/admins/add", json={
-        "nom": "John",
-        "adresse": "Dakar",
-        "password": "1234",
-        "role": "admin",
-        "username": "john123",
-        "image": "",
-        "telephone": "777777777",
-        "prenom": "Doe"
-    })
+def test_add_admin(client: FlaskClient):
+    # Test pour ajouter un nouvel administrateur
+    test_data = {
+        'nom': 'Dupont',
+        'adresse': '123 Rue Exemple',
+        'password': 'password123',
+        'role': 'admin',
+        'username': 'dupont',
+        'image': 'url_to_image',
+        'telephone': '0123456789',
+        'prenom': 'Jean'
+    }
+    response = client.post('/api/admin/add', json=test_data)
     assert response.status_code == 201
-    assert "access_token" in response.get_json()
+    response_json = response.get_json()
+    assert 'id' in response_json
+    admin = Admin.query.get(response_json['id'])
+    assert admin is not None
+    assert admin.nom == test_data['nom']
+    assert admin.adresse == test_data['adresse']
+    assert admin.role == test_data['role']
+    assert admin.username == test_data['username']
+    assert admin.image == test_data['image']
+    assert admin.telephone == test_data['telephone']
+    assert admin.prenom == test_data['prenom']
 
-# Test de récupération d'un admin par ID
-def test_get_admin(client, admin):
-    response = client.get(f"/api/admins/{admin.IDuser}")
+def test_add_admin_incomplete_data(client: FlaskClient):
+    # Test pour ajouter un administrateur avec des données incomplètes
+    test_data = {
+        'nom': 'Dupont',
+        'adresse': '123 Rue Exemple'
+    }
+    response = client.post('/api/admin/add', json=test_data)
+    assert response.status_code == 400
+    response_json = response.get_json()
+    assert response_json['message'] == 'Bad Request'
+
+def test_get_admin(client: FlaskClient):
+    # Test pour récupérer un administrateur par ID
+    admin = Admin(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='admin',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(admin)
+    db.session.commit()
+    response = client.get(f'/api/admin/{admin.IDuser}')
     assert response.status_code == 200
-    assert response.get_json()["nom"] == "Test"
+    response_json = response.get_json()
+    assert response_json['id'] == admin.IDuser
 
-# Test de récupération de tous les admins
-def test_get_all_admins(client, admin):
-    response = client.get("/api/admins/all")
+def test_get_admin_not_found(client: FlaskClient):
+    # Test pour récupérer un administrateur inexistant
+    response = client.get('/api/admin/999')
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
+
+def test_list_admins(client: FlaskClient):
+    # Test pour lister tous les administrateurs
+    admin1 = Admin(
+        nom='Admin 1',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='admin',
+        username='admin1',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    admin2 = Admin(
+        nom='Admin 2',
+        adresse='456 Rue Exemple',
+        password='password123',
+        role='admin',
+        username='admin2',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(admin1)
+    db.session.add(admin2)
+    db.session.commit()
+    response = client.get('/api/admin/all')
     assert response.status_code == 200
-    assert len(response.get_json()) > 0
+    response_json = response.get_json()
+    assert len(response_json) == 2
 
-# Test de mise à jour d'un admin
-def test_update_admin(client, admin):
-    response = client.put(f"/api/admins/update/{admin.IDuser}", json={"nom": "Updated"})
+def test_modify_admin(client: FlaskClient):
+    # Test pour modifier un administrateur
+    admin = Admin(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='admin',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(admin)
+    db.session.commit()
+    test_data = {
+        'nom': 'Nouveau Nom',
+        'adresse': 'Nouvelle Adresse',
+        'password': 'newpassword123',
+        'image': 'url_to_new_image',
+        'prenom': 'Nouveau Prénom'
+    }
+    response = client.put(f'/api/admin/update/{admin.IDuser}', json=test_data)
     assert response.status_code == 200
-    updated_admin = get_admin_by_id(admin.IDuser)
-    assert updated_admin.nom == "Updated"
+    response_json = response.get_json()
+    assert 'id' in response_json
+    updated_admin = Admin.query.get(response_json['id'])
+    assert updated_admin.nom == test_data['nom']
+    assert updated_admin.adresse == test_data['adresse']
+    assert updated_admin.image == test_data['image']
+    assert updated_admin.prenom == test_data['prenom']
 
-# Test de suppression d'un admin
-def test_delete_admin(client, admin):
-    response = client.delete(f"/api/admins/delete/{admin.IDuser}")
+def test_modify_admin_not_found(client: FlaskClient):
+    # Test pour modifier un administrateur inexistant
+    test_data = {
+        'nom': 'Nouveau Nom',
+        'adresse': 'Nouvelle Adresse'
+    }
+    response = client.put('/api/admin/update/999', json=test_data)
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
+
+def test_remove_admin(client: FlaskClient):
+    # Test pour supprimer un administrateur
+    admin = Admin(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='admin',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(admin)
+    db.session.commit()
+    response = client.delete(f'/api/admin/delete/{admin.IDuser}')
     assert response.status_code == 204
-    assert get_admin_by_id(admin.IDuser) is None
+    deleted_admin = Admin.query.get(admin.IDuser)
+    assert deleted_admin is None
 
-# Test de connexion
-def test_login(client, admin):
-    response = client.post("/api/admins/login", json={
-        "username": "testadmin",
-        "password": "password"
-    })
-    assert response.status_code == 200
-    assert "access_token" in response.get_json()
+def test_remove_admin_not_found(client: FlaskClient):
+    # Test pour supprimer un administrateur inexistant
+    response = client.delete('/api/admin/delete/999')
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert response_json['message'] == 'Not found'
 
-# Test d'accès à une route protégée
-def test_protected_route(client, access_token):
-    headers = {"Authorization": f"Bearer {access_token}"}
-    response = client.get("/api/admins/protected", headers=headers)
+def test_register_admin(client: FlaskClient):
+    # Test pour enregistrer un nouvel administrateur
+    test_data = {
+        'nom': 'Dupont',
+        'adresse': '123 Rue Exemple',
+        'password': 'password123',
+        'role': 'admin',
+        'username': 'dupont',
+        'image': 'url_to_image',
+        'telephone': '0123456789',
+        'prenom': 'Jean'
+    }
+    response = client.post('/api/admin/register', json=test_data)
+    assert response.status_code == 201
+    response_json = response.get_json()
+    assert response_json['message'] == 'Admin registered successfully'
+    assert 'access_token' in response_json
+
+def test_register_admin_incomplete_data(client: FlaskClient):
+    # Test pour enregistrer un administrateur avec des données incomplètes
+    test_data = {
+        'nom': 'Dupont',
+        'adresse': '123 Rue Exemple'
+    }
+    response = client.post('/api/admin/register', json=test_data)
+    assert response.status_code == 400
+    response_json = response.get_json()
+    assert response_json['message'] == 'Bad Request'
+
+def test_login_admin(client: FlaskClient):
+    # Test pour connecter un administrateur
+    admin = Admin(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='admin',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(admin)
+    db.session.commit()
+    test_data = {
+        'username': 'dupont',
+        'password': 'password123'
+    }
+    response = client.post('/api/admin/login', json=test_data)
     assert response.status_code == 200
-    assert "id" in response.get_json()
+    response_json = response.get_json()
+    assert 'access_token' in response_json
+
+def test_login_admin_invalid_credentials(client: FlaskClient):
+    # Test pour connecter un administrateur avec des identifiants invalides
+    test_data = {
+        'username': 'dupont',
+        'password': 'wrongpassword'
+    }
+    response = client.post('/api/admin/login', json=test_data)
+    assert response.status_code == 401
+    response_json = response.get_json()
+    assert response_json['message'] == 'Invalid credentials'
+
+def test_logout_admin(client: FlaskClient):
+    # Test pour déconnecter un administrateur
+    admin = Admin(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='admin',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(admin)
+    db.session.commit()
+    test_data = {
+        'username': 'dupont',
+        'password': 'password123'
+    }
+    login_response = client.post('/api/admin/login', json=test_data)
+    assert login_response.status_code == 200
+    access_token = login_response.get_json()['access_token']
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = client.post('/api/admin/logout', headers=headers)
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json['message'] == 'Logout successful'
+
+def test_protected_admin(client: FlaskClient):
+    # Test pour accéder à une route protégée
+    admin = Admin(
+        nom='Dupont',
+        adresse='123 Rue Exemple',
+        password='password123',
+        role='admin',
+        username='dupont',
+        image='url_to_image',
+        telephone='0123456789',
+        prenom='Jean'
+    )
+    db.session.add(admin)
+    db.session.commit()
+    test_data = {
+        'username': 'dupont',
+        'password': 'password123'
+    }
+    login_response = client.post('/api/admin/login', json=test_data)
+    assert login_response.status_code == 200
+    access_token = login_response.get_json()['access_token']
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = client.get('/api/admin/protected', headers=headers)
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json['id'] == admin.IDuser
+    assert response_json['nom'] == admin.nom
+    assert response_json['role'] == admin.role
+    assert response_json['username'] == admin.username

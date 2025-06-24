@@ -2,17 +2,14 @@ from enum import Enum
 from app.models import db
 from .user_model import User
 
-class TypeAuthorite(Enum):
-    PREFET = 'prefet'
-    MAIRE = 'maire'
-    ETAT = 'etat'
+
 
 class Authorite(User):
     __tablename__ = 'authorites'
     __table_args__ = {'mysql_engine': 'InnoDB'}  # Définir explicitement InnoDB
 
     IDauthorite = db.Column(db.Integer, db.ForeignKey('users.IDuser'), primary_key=True)
-    typeAuthorite = db.Column(db.Enum(TypeAuthorite), nullable=False)
+    typeAuthorite = db.Column(db.String(30), nullable=False)
     description = db.Column(db.Text, nullable=False)
 
     publications = db.relationship('Publication', backref='authorite', lazy=True)
