@@ -104,24 +104,13 @@ def add_user():
         logger.error(f"Erreur création utilisateur: {str(e)}")
         return jsonify({'message': 'Internal Server Error'}), 500
 
+# Remplacez cette partie dans votre user_route.py
+
 @user_bp.route('/<int:user_id>', methods=['GET'])
-@cache.cached(timeout=60, key_prefix='get_user')
-def get_user(user_id):
+@cache.cached(timeout=60, key_prefix='get_user_by_id')  # ← Changé le key_prefix
+def get_user_by_id_route(user_id):  # ← Changé le nom de la fonction
     """
     Récupère un utilisateur spécifique via son ID.
-    ---
-    parameters:
-      - name: user_id
-        in: path
-        required: true
-        type: integer
-    responses:
-      200:
-        description: Détails de l'utilisateur
-      404:
-        description: Utilisateur non trouvé
-      500:
-        description: Erreur interne
     """
     try:
         user = get_user_by_id(user_id)
@@ -143,6 +132,73 @@ def get_user(user_id):
     except Exception as e:
         logger.error(f"Erreur récupération utilisateur {user_id}: {str(e)}")
         return jsonify({'message': 'Internal Server Error'}), 500
+
+
+@user_bp.route('/check/<string:username>', methods=['GET'])  # ← Changé le chemin pour éviter conflit
+@cache.cached(timeout=60, key_prefix='check_user_by_username')
+def check_user_by_username(username):
+    """
+    Vérifie l'existence d'un utilisateur et retourne son type.
+    ---
+    parameters:
+      - name: username
+        in: path
+        required: true
+        type: string
+        example: "john_doe"
+    responses:
+      200:
+        description: Utilisateur trouvé
+      404:
+        description: Utilisateur non trouvé
+    """
+    try:
+        logger.info(f"🔍 Vérification de l'existence du username: {username}")
+        
+        # Importer les modèles nécessaires
+        from app.models.users.admin_model import Admin
+        from app.models.users.moderateur_model import Moderateur  
+        from app.models.users.autorite_model import Authorite
+        from app.models.users.citoyen_model import Citoyen
+        
+        # Rechercher dans chaque table d'utilisateur
+        user_tables = [
+            (Admin, 'admin'),
+            (Moderateur, 'moderateur'), 
+            (Authorite, 'authorite'),
+            (Citoyen, 'citoyen')
+        ]
+        
+        for UserModel, user_type in user_tables:
+            user = UserModel.query.filter_by(username=username).first()
+            
+            if user:
+                logger.info(f"✅ Utilisateur trouvé - Type: {user_type}, ID: {user.IDuser}")
+                
+                return jsonify({
+                    'exists': True,
+                    'user_type': user_type,
+                    'type_user': user_type,  # Alias pour compatibilité
+                    'user_id': user.IDuser,
+                    'id': user.IDuser,  # Alias pour compatibilité
+                    'username': user.username,
+                    'message': f'Utilisateur {user_type} trouvé'
+                }), 200
+        
+        # Aucun utilisateur trouvé
+        logger.info(f"❌ Aucun utilisateur trouvé avec le username: {username}")
+        return jsonify({
+            'exists': False,
+            'message': 'Utilisateur non trouvé'
+        }), 404
+        
+    except Exception as e:
+        logger.error(f"💥 Erreur lors de la vérification de l'utilisateur {username}: {str(e)}")
+        return jsonify({
+            'exists': False,
+            'message': 'Erreur interne du serveur'
+        }), 500
+
 
 @user_bp.route('/all', methods=['GET'])
 @cache.cached(timeout=60, key_prefix='list_users')
@@ -369,12 +425,39 @@ def login():
 
         user = authenticate_user(data['username'], data['password'])
         if not user:
-            return jsonify({'message': 'Authentification échouée '}), 401
-            
-        access_token = create_access_token(identity=user.IDuser)
+            return jsonify({'message': 'Authentification échouée'}), 401
+        
+        # ✅ CORRECTIF: Utiliser la même structure que l'admin
+        # Utiliser getattr pour gérer les champs qui peuvent ne pas exister
+        access_token = create_access_token(
+            identity=str(user.IDuser),
+            telephone=str(getattr(user, 'telephone', '') or ''),
+            username=str(user.username or ''),
+            adresse=str(user.adresse or ''),
+            prenom=str(getattr(user, 'prenom', '') or ''),
+            nom=str(user.nom or ''),
+            additional_claims={
+                'role': user.role,
+                'type_user': user.type_user,
+                'image': getattr(user, 'image', None),
+                'dateCreated': user.dateCreated.isoformat() if user.dateCreated else None
+            }
+        )
+        
+        logger.info(f"Utilisateur {user.IDuser} connecté")
         return jsonify({
             'access_token': access_token,
-            'user_type': user.type_user
+            'user_type': user.type_user,
+            'user_info': {
+                'id': user.IDuser,
+                'nom': user.nom,
+                'prenom': getattr(user, 'prenom', ''),
+                'username': user.username,
+                'telephone': getattr(user, 'telephone', ''),
+                'adresse': user.adresse,
+                'role': user.role,
+                'type_user': user.type_user
+            }
         }), 200
 
     except Exception as e:

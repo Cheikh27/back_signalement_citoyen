@@ -61,6 +61,9 @@ def create_user(nom, adresse, password, role, username, image, telephone, user_t
 def get_user_by_id(user_id):
     return User.query.filter_by(IDuser=user_id, is_deleted=False).first()
 
+def get_user_by_username(username):
+    return User.query.filter_by(username=username, is_deleted=False).first()
+
 def get_all_users():
     return User.query.filter_by(is_deleted=False).all()
 

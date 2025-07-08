@@ -149,6 +149,8 @@ def list_admins():
         'password':a.password
     } for a in admins])
 
+
+
 # Route pour mettre à jour un enregistrement
 @admin_bp.route('/update/<int:admin_id>', methods=['PUT'])
 def modify_admin(admin_id):
@@ -357,8 +359,16 @@ def login():
             return jsonify({'message': 'Bad Request'}), 400
 
         admin = authenticate_admin(data['username'], data['password'])
+        
         if admin:
-            access_token = create_access_token(identity=admin.IDuser)
+            access_token = access_token = create_access_token(
+            identity=admin.IDuser,
+            telephone=admin.telephone,
+            username=admin.username,
+            adresse=admin.adresse,
+            prenom=admin.prenom,
+            nom=admin.nom
+            )
             logger.info(f"Admin {admin.IDuser} connecté")
             return jsonify(access_token=access_token), 200
         return jsonify({'message': 'Invalid credentials'}), 401

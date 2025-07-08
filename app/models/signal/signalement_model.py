@@ -13,10 +13,29 @@ class Signalement(db.Model):
     # Stockage des métadonnées Supabase au format JSON
     elements = db.Column(db.Text, nullable=True)
     
-    statut = db.Column(db.String(20), nullable=False, default='en_cours')
+    statut = db.Column(db.String(20), nullable=False, default='en_attente')  # ← MODIFICATION: default='en_attente | rejeter | valider ==> en_cours | terminer'
     nbVotePositif = db.Column(db.Integer, nullable=True, default=0)
     nbVoteNegatif = db.Column(db.Integer, nullable=True, default=0)
     cible = db.Column(db.String(50), nullable=False)
+    priorite = db.Column(db.String(20), default='Basse')  #prioriter haute moyenne basse
+    
+    # ========== AJOUT DES CHAMPS DE LOCALISATION ==========
+    # Coordonnées GPS principales
+    latitude = db.Column(db.Numeric(10, 8), nullable=True)  # Ex: 14.69280000
+    longitude = db.Column(db.Numeric(11, 8), nullable=True)  # Ex: -17.44670000
+    
+    # Métadonnées GPS
+    accuracy = db.Column(db.Float, nullable=True)  # Précision en mètres
+    altitude = db.Column(db.Float, nullable=True)  # Altitude en mètres
+    heading = db.Column(db.Float, nullable=True)   # Direction en degrés (0-360)
+    speed = db.Column(db.Float, nullable=True)     # Vitesse en m/s
+    
+    # Horodatage et adresse
+    location_timestamp = db.Column(db.BigInteger, nullable=True)  # Timestamp de capture GPS
+    location_address = db.Column(db.Text, nullable=True)  # Adresse formatée lisible
+    has_location = db.Column(db.Boolean, default=False)  # Indicateur de présence GPS
+    # ========== FIN AJOUT LOCALISATION ==========
+    
     IDmoderateur = db.Column(db.Integer, nullable=True)
     anonymat = db.Column(db.Boolean, default=False)
     republierPar = db.Column(db.Integer, nullable=True)
@@ -250,6 +269,7 @@ class Signalement(db.Model):
         except:
             return {'total': 0, 'images': 0, 'videos': 0, 'documents': 0, 'audios': 0, 'others': 0}
 
+
     def get_media_by_category(self, category: str):
         """Filtre les médias par catégorie avec correction automatique"""
         try:
@@ -311,3 +331,81 @@ class Signalement(db.Model):
                 db.session.commit()
             except:
                 pass
+
+    def set_location_data(self, location_data):
+        """Définit les données de localisation à partir du dictionnaire"""
+        if not location_data:
+            return False
+            
+        try:
+            self.latitude = location_data.get('latitude')
+            self.longitude = location_data.get('longitude')
+            self.accuracy = location_data.get('accuracy')
+            self.altitude = location_data.get('altitude')
+            self.heading = location_data.get('heading')
+            self.speed = location_data.get('speed')
+            self.location_timestamp = location_data.get('timestamp')
+            self.location_address = location_data.get('address')
+            self.has_location = True
+            return True
+        except Exception as e:
+            print(f"❌ Erreur set_location_data: {e}")
+            return False
+    
+    def get_location_data(self):
+        """Retourne les données de localisation sous forme de dictionnaire"""
+        if not self.has_location:
+            return None
+            
+        return {
+            'latitude': float(self.latitude) if self.latitude else None,
+            'longitude': float(self.longitude) if self.longitude else None,
+            'accuracy': self.accuracy,
+            'altitude': self.altitude,
+            'heading': self.heading,
+            'speed': self.speed,
+            'timestamp': self.location_timestamp,
+            'address': self.location_address,
+            'has_location': self.has_location,
+            'coordinates_string': f"{self.latitude}, {self.longitude}" if self.latitude and self.longitude else None
+        }
+    
+    def get_google_maps_url(self):
+        """Génère une URL Google Maps pour la localisation"""
+        if not self.has_location or not self.latitude or not self.longitude:
+            return None
+        return f"https://www.google.com/maps?q={self.latitude},{self.longitude}"
+    
+    def calculate_distance_from(self, other_lat, other_lng):
+        """Calcule la distance en mètres depuis une autre position"""
+        if not self.has_location or not self.latitude or not self.longitude:
+            return None
+            
+        from math import radians, cos, sin, asin, sqrt
+        
+        # Formule haversine
+        lat1, lon1 = radians(float(self.latitude)), radians(float(self.longitude))
+        lat2, lon2 = radians(other_lat), radians(other_lng)
+        
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * asin(sqrt(a))
+        
+        # Rayon de la Terre en mètres
+        r = 6371000
+        return c * r
+    
+    def is_location_valid(self):
+        """Vérifie si les coordonnées GPS sont valides"""
+        if not self.has_location:
+            return False
+        
+        if not self.latitude or not self.longitude:
+            return False
+            
+        lat = float(self.latitude)
+        lng = float(self.longitude)
+        
+        # Vérifier les plages valides
+        return -90 <= lat <= 90 and -180 <= lng <= 180

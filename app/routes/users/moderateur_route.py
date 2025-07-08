@@ -350,10 +350,39 @@ def login():
             return jsonify({'message': 'Bad Request'}), 400
 
         moderateur = authenticate_moderateur(data['username'], data['password'])
+        
         if moderateur:
-            access_token = create_access_token(identity=moderateur.IDuser)
+            # ✅ CORRECTIF: Utiliser la même structure que l'admin
+            access_token = create_access_token(
+                identity=str(moderateur.IDuser),
+                telephone=str(moderateur.telephone or ''),
+                username=str(moderateur.username or ''),
+                adresse=str(moderateur.adresse or ''),
+                prenom=str(moderateur.prenom or ''),
+                nom=str(moderateur.nom or ''),
+                additional_claims={
+                    'role': moderateur.role,
+                    'type_user': moderateur.type_user,
+                    'image': moderateur.image,
+                    'dateCreated': moderateur.dateCreated.isoformat() if moderateur.dateCreated else None
+                }
+            )
+            
             logger.info(f"Modérateur {moderateur.IDuser} connecté")
-            return jsonify(access_token=access_token), 200
+            return jsonify({
+                'access_token': access_token,
+                'user_type': moderateur.type_user,
+                'user_info': {
+                    'id': moderateur.IDuser,
+                    'nom': moderateur.nom,
+                    'prenom': moderateur.prenom,
+                    'username': moderateur.username,
+                    'telephone': moderateur.telephone,
+                    'adresse': moderateur.adresse,
+                    'role': moderateur.role,
+                    'type_user': moderateur.type_user
+                }
+            }), 200
         return jsonify({'message': 'Invalid credentials'}), 401
 
     except Exception as e:

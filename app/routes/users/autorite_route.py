@@ -363,10 +363,8 @@ def login():
           properties:
             username:
               type: string
-              example: "dupont"
             password:
               type: string
-              example: "password123"
     responses:
       200:
         description: Connexion réussie
@@ -375,7 +373,7 @@ def login():
       401:
         description: Identifiants invalides
       500:
-        description: Erreur serveur
+        description: Erreur interne
     """
     try:
         data = request.get_json()
@@ -386,9 +384,41 @@ def login():
 
         authorite = authenticate_authorite(data['username'], data['password'])
         if authorite:
-            access_token = create_access_token(identity=authorite.IDuser)
+            # ✅ CORRECTIF: Utiliser la même structure que l'admin
+            # Note: Les autorités n'ont pas de 'prenom', donc on utilise une chaîne vide
+            access_token = create_access_token(
+                identity=str(authorite.IDuser),
+                telephone=str(authorite.telephone or ''),
+                username=str(authorite.username or ''),
+                adresse=str(authorite.adresse or ''),
+                prenom='',  # Les autorités n'ont pas de prénom
+                nom=str(authorite.nom or ''),
+                additional_claims={
+                    'role': authorite.role,
+                    'type_user': authorite.type_user,
+                    'image': authorite.image,
+                    'typeAuthorite': authorite.typeAuthorite,
+                    'description': authorite.description,
+                    'dateCreated': authorite.dateCreated.isoformat() if authorite.dateCreated else None
+                }
+            )
+            
             logger.info(f"Autorité {authorite.IDuser} connectée")
-            return jsonify(access_token=access_token), 200
+            return jsonify({
+                'access_token': access_token,
+                'user_type': authorite.type_user,
+                'user_info': {
+                    'id': authorite.IDuser,
+                    'nom': authorite.nom,
+                    'username': authorite.username,
+                    'telephone': authorite.telephone,
+                    'adresse': authorite.adresse,
+                    'role': authorite.role,
+                    'type_user': authorite.type_user,
+                    'typeAuthorite': authorite.typeAuthorite,
+                    'description': authorite.description
+                }
+            }), 200
         return jsonify({'message': 'Invalid credentials'}), 401
 
     except Exception as e:

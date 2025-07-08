@@ -12,14 +12,15 @@ class Petition(db.Model):
     nbCommentaire = db.Column(db.Integer, nullable=True)
 
     dateFin = db.Column(db.DateTime, nullable=True)
+    statut = db.Column(db.String(20), nullable=False, default='en_attente')  # ← MODIFICATION: default='en_attente | rejeter | valider ==> en_cours | terminer'
 
-    statut = db.Column(db.String(20), nullable=False, default='en_cours')
     anonymat = db.Column(db.Boolean, default=False)
     elements = db.Column(db.Text, nullable=True)
 
     objectifSignature = db.Column(db.Integer, nullable=True)
     titre = db.Column(db.String(100), nullable=False)
-    cible = db.Column(db.String(15), nullable=False, default='public')
+    cible = db.Column(db.String(15), nullable=True)  
+
 
     IDmoderateur = db.Column(db.Integer, nullable=True)
 
@@ -27,7 +28,6 @@ class Petition(db.Model):
     is_deleted = db.Column(db.Boolean, default=False)
 
     destinataire = db.Column(db.String(100), nullable=False)
-    contact = db.Column(db.String(100), nullable=False)
     republierPar = db.Column(db.Integer, nullable=True)
 
     citoyenID = db.Column(db.Integer, db.ForeignKey('citoyens.IDcitoyen'), nullable=False)
@@ -37,8 +37,7 @@ class Petition(db.Model):
     CommentairePetition = db.relationship('CommentairePetition', backref='petitions', lazy=True)
 
     def __repr__(self):
-        return f"<Petition ID: {self.IDpetition}, description: {self.description}, nbPartage: {self.nbPartage}, dateFin: {self.dateFin}, objectifSignature: {self.objectifSignature}, titre: {self.titre}, cible: {self.cible}, IDmoderateur: {self.IDmoderateur}, dateCreated: {self.dateCreated}, is_deleted: {self.is_deleted}>"
-
+        return f"<Petition ID: {self.IDpetition}, description: {self.description}, nbPartage: {self.nbPartage}, dateFin: {self.dateFin}, objectifSignature: {self.objectifSignature}, titre: {self.titre}, IDmoderateur: {self.IDmoderateur}, dateCreated: {self.dateCreated}, is_deleted: {self.is_deleted}>"
     def set_elements(self, media_list):
         """Enregistre la liste des médias (métadonnées uniquement) en JSON"""
         self.elements = json.dumps(media_list)

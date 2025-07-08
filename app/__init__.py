@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_caching import Cache
-from flask_socketio import SocketIO, emit, send
+# from flask_socketio import SocketIO, emit, send
 from dotenv import load_dotenv
 import os
 import logging
@@ -23,10 +23,10 @@ db = SQLAlchemy()
 migrate = Migrate()
 cors = CORS()
 cache = Cache()
-socketio = SocketIO(cors_allowed_origins="*")
+# socketio = SocketIO(cors_allowed_origins="*")
 
 # Dictionnaire pour suivre les connexions WebSocket
-connected_users = {}
+# connected_users = {}
 
 def create_app():
     app = Flask(__name__)
@@ -268,49 +268,49 @@ def create_app():
     app.register_blueprint(notification_bp, url_prefix='/api/notification')
 
     # ========== GESTION DES CONNEXIONS WEBSOCKET ==========
-    @socketio.on("connect")
-    def handle_connect():
-        token = request.args.get("token")
-        if token:
-            try:
-                user_data = decode_token(token)
-                user_id = user_data["sub"]
-                connected_users[user_id] = request.sid
-                print(f"Utilisateur {user_id} connecté avec socket_id {request.sid}")
-            except Exception as e:
-                print(f"Erreur WebSocket : {e}")
-                return False
+    # @socketio.on("connect")
+    # def handle_connect():
+    #     token = request.args.get("token")
+    #     if token:
+    #         try:
+    #             user_data = decode_token(token)
+    #             user_id = user_data["sub"]
+    #             connected_users[user_id] = request.sid
+    #             print(f"Utilisateur {user_id} connecté avec socket_id {request.sid}")
+    #         except Exception as e:
+    #             print(f"Erreur WebSocket : {e}")
+    #             return False
 
-    @socketio.on("disconnect")
-    def handle_disconnect():
-        user_id = None
-        for uid, socket_id in connected_users.items():
-            if socket_id == request.sid:
-                user_id = uid
-                break
-        if user_id:
-            del connected_users[user_id]
-            print(f"Utilisateur {user_id} déconnecté.")
+    # @socketio.on("disconnect")
+    # def handle_disconnect():
+    #     user_id = None
+    #     for uid, socket_id in connected_users.items():
+    #         if socket_id == request.sid:
+    #             user_id = uid
+    #             break
+    #     if user_id:
+    #         del connected_users[user_id]
+    #         print(f"Utilisateur {user_id} déconnecté.")
 
-    @socketio.on("message")
-    def handle_message(data):
-        print(f"Message reçu : {data}")
-        send(f"Serveur : {data}", broadcast=True)
+    # @socketio.on("message")
+    # def handle_message(data):
+    #     print(f"Message reçu : {data}")
+    #     send(f"Serveur : {data}", broadcast=True)
 
-    @socketio.on("new_comment")
-    def handle_new_comment(data):
-        print(f"Nouveau commentaire : {data}")
-        emit("comment_notification", {"message": "Un nouveau commentaire a été ajouté !"}, broadcast=True)
+    # @socketio.on("new_comment")
+    # def handle_new_comment(data):
+    #     print(f"Nouveau commentaire : {data}")
+    #     emit("comment_notification", {"message": "Un nouveau commentaire a été ajouté !"}, broadcast=True)
 
-    @socketio.on("new_message")
-    def handle_new_message(data):
-        print(f"Nouveau message : {data}")
-        emit("message_notification", {"message": "Vous avez reçu un nouveau message !"}, broadcast=True)
+    # @socketio.on("new_message")
+    # def handle_new_message(data):
+    #     print(f"Nouveau message : {data}")
+    #     emit("message_notification", {"message": "Vous avez reçu un nouveau message !"}, broadcast=True)
 
-    @socketio.on("new_notification")
-    def handle_new_notification(data):
-        print(f"Nouvelle notification : {data}")
-        emit("notification_alert", data, broadcast=True)
+    # @socketio.on("new_notification")
+    # def handle_new_notification(data):
+    #     print(f"Nouvelle notification : {data}")
+    #     emit("notification_alert", data, broadcast=True)
 
     return app
 
@@ -336,6 +336,16 @@ def setup_logging(app):
         app.logger.setLevel(getattr(logging, os.getenv('LOG_LEVEL', 'INFO')))
         app.logger.info('Application démarrage')
 
+# if __name__ == "__main__":
+#     app = create_app()
+#     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
 if __name__ == "__main__":
     app = create_app()
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+    print("🚀 Démarrage du serveur Flask...")
+    print("📡 Accessible sur:")
+    print("   - http://127.0.0.1:5000")
+    print("   - http://192.168.1.16:5000")
+    print("🔥 Serveur prêt pour les requêtes !")
+    
+    # ✅ Flask simple sans SocketIO
+    app.run(host="0.0.0.0", port=5000, debug=True)
